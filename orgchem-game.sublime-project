@@ -1,0 +1,25 @@
+{
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"name": "orgchem-game",
+			"path": "/home/wenyuen/orgchem-game"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Flixel",
+			"path": "/home/wenyuen/haxelib/flixel/3,3,12/"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Flixel Addons",
+			"path": "/home/wenyuen/haxelib/flixel-addons/1,1,1/"
+		},
+		{
+			"follow_symlinks": true,
+			"name": "Haxe",
+			"path": "/usr/lib/haxe/std"
+		}
+	]
+}
