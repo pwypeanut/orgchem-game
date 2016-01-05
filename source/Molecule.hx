@@ -53,6 +53,9 @@ class Molecule {
 			if (this.grid[newpoint.x][newpoint.y].type.name != "Carbon" || (newpoint.x == prev.x && newpoint.y == prev.y)) {
 				continue;
 			}
+			if (adjacency[point.x][point.y][i] == 0) {
+				continue;
+			}
 			var branch: NodeDistance = dfs(newpoint, point, distance + 1);
 			if (branch.distance > currentMaximum.distance) {
 				currentMaximum = branch;
@@ -69,6 +72,9 @@ class Molecule {
 				continue;
 			}
 			if (this.grid[newpoint.x][newpoint.y].type.name != "Carbon" || (newpoint.x == prev.x && newpoint.y == prev.y)) {
+				continue;
+			}
+			if (adjacency[point.x][point.y][i] == 0) {
 				continue;
 			}
 			var branch = tracePath(newpoint, targetPoint, point);
@@ -96,5 +102,17 @@ class Molecule {
 		var secondFurthest = dfs(furthestUnit.node, new Point(-1, -1), 0);
 
 		return tracePath(furthestUnit.node, secondFurthest.node, new Point(-1, -1));
+	}
+
+	public function getMolecularFormula(): MolecularFormula {
+		var result = new MolecularFormula();
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				if (numberBonds(i, j) != 0) {
+					result.add(this.grid[i][j].type.symbol);
+				}
+			}
+		}
+		return result;
 	}
 }
