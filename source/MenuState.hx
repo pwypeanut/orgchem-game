@@ -17,6 +17,8 @@ class MenuState extends FlxState
 	 */
 	override public function create():Void
 	{
+		var m: Molecule = new Molecule(10, 10);
+		add(new FlxText(10, 10, 100, UnitType.CARBON.name));
 		super.create();
 	}
 	
