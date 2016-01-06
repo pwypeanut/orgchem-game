@@ -20,6 +20,9 @@ class MenuState extends FlxState
 		var m: Molecule = new Molecule(10, 10);
 		add(new FlxText(10, 10, 100, UnitType.CARBON.name));
 		super.create();
+		
+		Reg.ps = new PlayState();
+		FlxG.switchState(Reg.ps);
 	}
 	
 	/**
