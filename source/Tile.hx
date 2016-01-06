@@ -1,14 +1,15 @@
 package;
 
 import flixel.FlxSprite;
+import flixel.util.FlxPoint;
 import flixel.tweens.FlxTween;
 
 class Tile extends FlxSprite {
 	public var type:UnitType;
 	private var activated:Bool = false;
 
-	public function new(X:Float=0, Y:Float=0, ?type:UnitType) {
-		super(X, Y);
+	public function new(coords:FlxPoint, ?type:UnitType) {
+		super(coords.x, coords.y);
 		
 		this.scale.set(0.5, 0.5);
 		
