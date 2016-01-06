@@ -2,14 +2,14 @@ class Point {
 	public var x: Int;
 	public var y: Int;
 	public static var directions = [
-		new Point(-1, 0),
-		new Point(-1, 1),
-		new Point(0, 1),
-		new Point(1, 1),
-		new Point(1, 0),
-		new Point(1, -1),
-		new Point(0, -1),
-		new Point(-1, -1)
+		new Point(-1, 0), // up
+		new Point(-1, 1), // up-right
+		new Point(0, 1), // right
+		new Point(1, 1), // down-right
+		new Point(1, 0), // down
+		new Point(1, -1), // down-left
+		new Point(0, -1), // left
+		new Point(-1, -1) // top-left
 	];
 	public function new(_x: Int, _y: Int) {
 		this.x = _x;

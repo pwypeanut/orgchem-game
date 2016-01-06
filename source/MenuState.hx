@@ -17,8 +17,22 @@ class MenuState extends FlxState
 	 */
 	override public function create():Void
 	{
-		var m: Molecule = new Molecule(10, 10);
-		add(new FlxText(10, 10, 100, UnitType.CARBON.name));
+		/*var m: Molecule = new Molecule(4, 4);
+		m.adjacency[0][0][2] = 1;
+		m.adjacency[0][1][6] = 1;
+		m.adjacency[0][1][4] = 1;
+		m.adjacency[1][1][0] = 1;
+		m.adjacency[0][2][4] = 1;
+		m.adjacency[1][2][0] = 1;
+		//m.adjacency[1][2][4] = 1;
+		//m.adjacency[2][2][0] = 1;
+		m.adjacency[0][2][6] = 1;
+		m.adjacency[0][1][2] = 1;
+		m.adjacency[0][3][6] = 1;
+		m.adjacency[0][2][2] = 1;
+		m.grid[1][1] = new Unit(UnitType.CHLORINE);
+		m.grid[1][2] = new Unit(UnitType.BROMINE);
+		trace(m.getName());*/
 		super.create();
 		
 		Reg.ps = new PlayState();
