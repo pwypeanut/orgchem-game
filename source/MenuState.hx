@@ -22,16 +22,17 @@ class MenuState extends FlxState
 		m.adjacency[0][1][6] = 1;
 		m.adjacency[0][1][4] = 1;
 		m.adjacency[1][1][0] = 1;
-		m.adjacency[0][2][4] = 1;
-		m.adjacency[1][2][0] = 1;
-		//m.adjacency[1][2][4] = 1;
-		//m.adjacency[2][2][0] = 1;
-		m.adjacency[0][2][6] = 1;
 		m.adjacency[0][1][2] = 1;
-		m.adjacency[0][3][6] = 1;
+		m.adjacency[0][2][6] = 1;
 		m.adjacency[0][2][2] = 1;
+		m.adjacency[0][3][6] = 1;
+		m.adjacency[1][2][0] = 1;
+		m.adjacency[0][2][4] = 1;
+		m.adjacency[1][2][2] = 1;
+		m.adjacency[1][3][6] = 1;
+		m.adjacency[1][2][4] = 1;
+		m.adjacency[2][2][0] = 1;
 		m.grid[1][1] = new Unit(UnitType.CHLORINE);
-		m.grid[1][2] = new Unit(UnitType.BROMINE);
 		trace(m.getName());*/
 		super.create();
 		

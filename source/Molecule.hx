@@ -1,10 +1,13 @@
 typedef AdjInfo = {carbon: Int, unit: Point, source: Point};
-typedef StrComponent = {type: String, position: Int};
+typedef StrComponent = {type: String, mainType: String, position: Int};
 typedef ChainInfo = {sideChains: Array<AdjInfo>, source: Point, end: Point};
+typedef SideBranchState = {source: Point, starting: Point};
+typedef MoleculeString = {mainString: String, completeString: String};
 
 class Molecule {
 	private var chainPrefixes: Array<String> = ["meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non", "dec", "undec", "dodec", "tridec", "tetradec", "pentadec", "hexadec"];
 	private var countPrefixes: Array<String> = ["", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca", "undeca", "dodeca", "trideca", "tetradeca", "pentadeca", "hexadeca"];
+	private var sideBranchMemo = new Map<SideBranchState, MoleculeString>();
 	public var height: Int;
 	public var width: Int;
 	public var grid: Array< Array<Unit> >;
@@ -88,11 +91,13 @@ class Molecule {
 
 	private function processStringComponents(strComponents: Array<StrComponent>, chainLength: Int): String {
 		strComponents.sort(function(a: StrComponent, b: StrComponent) {
-			if (a.type != b.type) {
+			if (a.mainType != b.mainType) {
+				if (a.mainType < b.mainType) return -1;
+				else return 1;
+			} else if (a.type != b.type) {
 				if (a.type < b.type) return -1;
 				else return 1;
-			}
-			else {
+			} else {
 				if (a.position < b.position) return -1;
 				else if (a.position == b.position) return 0;
 				else return 1;
@@ -155,7 +160,11 @@ class Molecule {
 		return numberCarbon;
 	}
 
-	private function nameSideBranch(starting: Point, source: Point): String {
+	private function nameSideBranch(starting: Point, source: Point): MoleculeString {
+		if (sideBranchMemo.exists({source: source, starting: starting})) {
+			return sideBranchMemo.get({source: source, starting: starting});
+		}
+		var strBest = new Array<StrComponent>();
 		var bestMain = new Array<AdjInfo>();
 		var sourceMain = new Point(0, 0);
 		var endMain = new Point(0, 0);
@@ -213,6 +222,33 @@ class Molecule {
 				// compare by longest length, then number of side chains, then lex order of side chains
 				var originalLength = tracePath(sourceMain, endMain, sourceMain).length;
 				var newLength = path.length;
+				var strComponents = new Array<StrComponent>();
+				for (m in 0...sideBranches.length) {
+					if (grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.name == "Carbon") {
+						strComponents.push({
+							type: nameSideBranch(sideBranches[m].unit, sideBranches[m].source).completeString,
+							position: sideBranches[m].carbon,
+							mainType: nameSideBranch(sideBranches[m].unit, sideBranches[m].source).mainString
+						});
+					} else strComponents.push({
+						type: grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.prefix,
+						position: sideBranches[m].carbon,
+						mainType: grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.prefix
+					});
+				}
+				strComponents.sort(function(a: StrComponent, b: StrComponent) {
+					if (a.mainType != b.mainType) {
+						if (a.mainType < b.mainType) return -1;
+						else return 1;
+					} else if (a.type != b.type) {
+						if (a.type < b.type) return -1;
+						else return 1;
+					} else {
+						if (a.position < b.position) return -1;
+						else if (a.position == b.position) return 0;
+						else return 1;
+					}
+				});
 				if (newLength != originalLength) {
 					if (newLength < originalLength) {
 						continue;
@@ -220,6 +256,7 @@ class Molecule {
 						bestMain = sideBranches;
 						sourceMain = starting;
 						endMain = new Point(i, j);
+						strBest = strComponents;
 					}
 				} else if (sideBranches.length != bestMain.length) {
 					if (sideBranches.length < bestMain.length) {
@@ -228,15 +265,16 @@ class Molecule {
 						bestMain = sideBranches;
 						sourceMain = starting;
 						endMain = new Point(i, j);
+						strBest = strComponents;
 					}
 				} else {
-					for (m in 0...sideBranches.length) {
-						if (sideBranches[m].carbon != bestMain[m].carbon) {
-							if (sideBranches[m].carbon < bestMain[m].carbon) {
+					for (m in 0...strComponents.length) {
+						if (strComponents[m].position != strBest[m].position) {
+							if (strComponents[m].position < strBest[m].position) {
 								bestMain = sideBranches;
 								sourceMain = starting;
 								endMain = new Point(i, j);
-								break;
+								strBest = strComponents;
 							} else break;
 						}
 					}
@@ -244,20 +282,32 @@ class Molecule {
 			}
 		}
 
-		var strComponents = new Array<StrComponent>();
-		for (i in 0...bestMain.length) {
-			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
-				strComponents.push({type: nameSideBranch(bestMain[i].unit, bestMain[i].source), position: bestMain[i].carbon});
-			} else strComponents.push({type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, position: bestMain[i].carbon});
+		if (strBest.length == 0) {
+			sideBranchMemo.set({source: source, starting: starting}, {
+				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
+				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
+			});
+			return {
+				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
+				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
+			};
+		} else {
+			sideBranchMemo.set({source: source, starting: starting}, {
+				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
+				mainString: strBest[0].mainType
+			});
+			return {
+				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
+				mainString: strBest[0].mainType
+			};
 		}
-
-		return "(" + processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "yl)";
 	}
 
 	public function getMainChain(): ChainInfo {
 		var bestMain = new Array<AdjInfo>();
 		var sourceMain = new Point(0, 0);
 		var endMain = new Point(0, 0);
+		var strBest = new Array<StrComponent>();
 		for (i in 0...this.height) {
 			for (j in 0...this.width) {
 				for (k in 0...this.height) {
@@ -315,6 +365,33 @@ class Molecule {
 						// compare by longest length, then number of side chains, then lex order of side chains
 						var originalLength = tracePath(sourceMain, endMain, sourceMain).length;
 						var newLength = path.length;
+						var strComponents = new Array<StrComponent>();
+						for (m in 0...sideBranches.length) {
+							if (grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.name == "Carbon") {
+								strComponents.push({
+									type: nameSideBranch(sideBranches[m].unit, sideBranches[m].source).completeString,
+									position: sideBranches[m].carbon,
+									mainType: nameSideBranch(sideBranches[m].unit, sideBranches[m].source).mainString
+								});
+							} else strComponents.push({
+								type: grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.prefix,
+								position: sideBranches[m].carbon,
+								mainType: grid[sideBranches[m].unit.x][sideBranches[m].unit.y].type.prefix
+							});
+						}
+						strComponents.sort(function(a: StrComponent, b: StrComponent) {
+							if (a.mainType != b.mainType) {
+								if (a.mainType < b.mainType) return -1;
+								else return 1;
+							} else if (a.type != b.type) {
+								if (a.type < b.type) return -1;
+								else return 1;
+							} else {
+								if (a.position < b.position) return -1;
+								else if (a.position == b.position) return 0;
+								else return 1;
+							}
+						});
 						if (newLength != originalLength) {
 							if (newLength < originalLength) {
 								continue;
@@ -322,6 +399,7 @@ class Molecule {
 								bestMain = sideBranches;
 								sourceMain = source;
 								endMain = end;
+								strBest = strComponents;
 							}
 						} else if (sideBranches.length != bestMain.length) {
 							if (sideBranches.length < bestMain.length) {
@@ -330,14 +408,16 @@ class Molecule {
 								bestMain = sideBranches;
 								sourceMain = source;
 								endMain = end;
+								strBest = strComponents;
 							}
 						} else {
-							for (m in 0...sideBranches.length) {
-								if (sideBranches[m].carbon != bestMain[m].carbon) {
-									if (sideBranches[m].carbon < bestMain[m].carbon) {
+							for (m in 0...strComponents.length) {
+								if (strComponents[m].position != strBest[m].position) {
+									if (strComponents[m].position < strBest[m].position) {
 										bestMain = sideBranches;
 										sourceMain = source;
 										endMain = end;
+										strBest = strComponents;
 										break;
 									} else break;
 								}
@@ -351,6 +431,7 @@ class Molecule {
 	}
 
 	public function getName(): String {
+		sideBranchMemo = new Map<SideBranchState, MoleculeString>();
 		var mainChain: ChainInfo = getMainChain();
 		var bestMain: Array<AdjInfo> = mainChain.sideChains;
 		var sourceMain: Point = mainChain.source;
@@ -359,8 +440,16 @@ class Molecule {
 		var strComponents = new Array<StrComponent>();
 		for (i in 0...bestMain.length) {
 			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
-				strComponents.push({type: nameSideBranch(bestMain[i].unit, bestMain[i].source), position: bestMain[i].carbon});
-			} else strComponents.push({type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, position: bestMain[i].carbon});
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
 		}
 
 		return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
