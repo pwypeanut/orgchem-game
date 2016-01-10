@@ -115,7 +115,9 @@ class PlayState extends FlxState
 				// they are on a unit
 				if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") {
 					// they must start from a carbon
-					currentMouseSource = gridCoords;
+					if (currentMolecule.isActive(gridCoords.x, gridCoords.y) || currentMolecule.isEmpty()) {
+						currentMouseSource = gridCoords;
+					}
 				}
 			}
 		} 

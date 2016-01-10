@@ -1,13 +1,16 @@
+import haxe.ds.ObjectMap;
+
 typedef AdjInfo = {carbon: Int, unit: Point, source: Point};
 typedef StrComponent = {type: String, mainType: String, position: Int};
 typedef ChainInfo = {sideChains: Array<AdjInfo>, source: Point, end: Point};
 typedef SideBranchState = {source: Point, starting: Point};
+typedef SideBranchMemoState = {source_x: Int, source_y: Int, starting_x: Int, starting_y: Int};
 typedef MoleculeString = {mainString: String, completeString: String};
 
 class Molecule {
 	private var chainPrefixes: Array<String> = ["meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non", "dec", "undec", "dodec", "tridec", "tetradec", "pentadec", "hexadec"];
 	private var countPrefixes: Array<String> = ["", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca", "undeca", "dodeca", "trideca", "tetradeca", "pentadeca", "hexadeca"];
-	private var sideBranchMemo = new Map<SideBranchState, MoleculeString>();
+	private var sideBranchMemo = new Map<Int, MoleculeString>();
 	public var height: Int;
 	public var width: Int;
 	public var grid: Array< Array<Unit> >;
@@ -50,6 +53,17 @@ class Molecule {
 
 	public function isActive(x: Int, y: Int): Bool {
 		return numberBonds(x, y) > 0;
+	}
+
+	public function isEmpty(): Bool {
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				for (k in 0...8) {
+					if (this.adjacency[i][j][k] != 0) return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public function new(_height: Int, _width: Int) {
@@ -199,9 +213,13 @@ class Molecule {
 		return numberCarbon;
 	}
 
+	private function getMemoState(starting: Point, source: Point): Int {
+		return source.x * (this.height * this.width * this.width) + source.y * (this.height * this.width) + starting.x * this.width + starting.y;
+	}
+
 	private function nameSideBranch(starting: Point, source: Point): MoleculeString {
-		if (sideBranchMemo.exists({source: source, starting: starting})) {
-			return sideBranchMemo.get({source: source, starting: starting});
+		if (sideBranchMemo.exists(getMemoState(starting, source))) {
+			return sideBranchMemo.get(getMemoState(starting, source));
 		}
 		var strBest = new Array<StrComponent>();
 		var bestMain = new Array<AdjInfo>();
@@ -322,7 +340,7 @@ class Molecule {
 		}
 
 		if (strBest.length == 0) {
-			sideBranchMemo.set({source: source, starting: starting}, {
+			sideBranchMemo.set(getMemoState(starting, source), {
 				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
 				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
 			});
@@ -331,7 +349,7 @@ class Molecule {
 				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
 			};
 		} else {
-			sideBranchMemo.set({source: source, starting: starting}, {
+			sideBranchMemo.set(getMemoState(starting, source), {
 				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
 				mainString: strBest[0].mainType
 			});
@@ -470,7 +488,7 @@ class Molecule {
 	}
 
 	public function getName(): String {
-		sideBranchMemo = new Map<SideBranchState, MoleculeString>();
+		sideBranchMemo = new Map<Int, MoleculeString>();
 		var mainChain: ChainInfo = getMainChain();
 		var bestMain: Array<AdjInfo> = mainChain.sideChains;
 		var sourceMain: Point = mainChain.source;
