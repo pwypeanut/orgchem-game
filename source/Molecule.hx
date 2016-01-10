@@ -13,6 +13,41 @@ class Molecule {
 	public var grid: Array< Array<Unit> >;
 	public var adjacency: Array< Array< Array<Int> > >; // a height * width * 8 array representing the adjacency of units
 
+	public function clone(): Molecule {
+		var ret = new Molecule(this.height, this.width);
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				ret.grid[i][j] = new Unit(this.grid[i][j].type);
+			}
+		}
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				for (k in 0...8) {
+					ret.adjacency[i][j][k] = this.adjacency[i][j][k];
+				}
+			}
+		}
+		return ret;
+	}
+
+	public function same(other: Molecule): Bool {
+		if (this.height != other.height) return false;
+		if (this.width != other.width) return false;
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				if (this.grid[i][j].type.name != other.grid[i][j].type.name) return false;
+			}
+		}
+		for (i in 0...this.height) {
+			for (j in 0...this.width) {
+				for (k in 0...8) {
+					if (this.adjacency[i][j][k] != other.adjacency[i][j][k]) return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	public function new(_height: Int, _width: Int) {
 		this.height = _height;
 		this.width = _width;

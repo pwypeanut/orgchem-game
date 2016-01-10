@@ -9,6 +9,7 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
+import haxe.ds.GenericStack;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -20,12 +21,15 @@ class PlayState extends FlxState
 	
 	var _grpBonds:FlxTypedGroup<Bond>;
 	var _gridBonds:Array<Array<Array<Bond>>>;
+	var currentMolecule: Molecule = new Molecule(4, 4);
+	var undoStack = new GenericStack<Molecule>();
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
 	override public function create():Void
 	{
 		super.create();
+		undoStack.add(currentMolecule.clone());
 		
 		this.bgColor = 0xffffffff;
 		//FlxG.debugger.drawDebug = true;
@@ -100,8 +104,53 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+		currentMolecule.grid[0][1] = new Unit(UnitType.CHLORINE);
+		currentMolecule.adjacency[0][0][2] = currentMolecule.adjacency[0][1][6] = 1;
+		var lastMolecule: Molecule = undoStack.first();
+		if (!currentMolecule.same(undoStack.first())) {
+			// current molecule has changed, update.
+			for (i in 0...currentMolecule.height) {
+				for (j in 0...currentMolecule.width) {
+					if (currentMolecule.grid[i][j].type.name != lastMolecule.grid[i][j].type.name) {
+						_grpTiles.remove(_gridTiles[i][j]);
+						_gridTiles[i][j] = new Tile(getTileCoordinates(j, i), currentMolecule.grid[i][j].type);
+						_grpTiles.add(_gridTiles[i][j]);
+					}
+				}
+			}
+			for (i in 0...currentMolecule.height) {
+				for (j in 0...currentMolecule.width) {
+					for (k in 0...4) {
+						if (currentMolecule.adjacency[i][j][k] != lastMolecule.adjacency[i][j][k]) {
+							_grpBonds.remove(_gridBonds[i][j][k]);
+							_gridBonds[i][j][k] = _gridBonds[i + Point.directions[k].x][j + Point.directions[k].y][(k + 4) % 8] = new Bond(pointAverage(getTileCentreCoordinates(j, i), getTileCentreCoordinates(j + Point.directions[k].y, i + Point.directions[k].x)), bondAngle(k));
+							if (currentMolecule.adjacency[i][j][k] > 0) {
+								_gridBonds[i][j][k].setType(currentMolecule.adjacency[i][j][k]);
+								_gridBonds[i + Point.directions[k].x][j + Point.directions[k].y][(k + 4) % 8].setType(currentMolecule.adjacency[i][j][k]);
+							}
+							if (currentMolecule.adjacency[i][j][k] > 0) {
+								_gridBonds[i][j][k].showBond();
+								_gridBonds[i + Point.directions[k].x][j + Point.directions[k].y][(k + 4) % 8].showBond();
+							} else {
+								_gridBonds[i][j][k].hideBond();
+								_gridBonds[i + Point.directions[k].x][j + Point.directions[k].y][(k + 4) % 8].hideBond();
+							}
+							_grpBonds.add(_gridBonds[i][j][k]);
+						}
+					}
+				}
+			}
+			undoStack.add(currentMolecule.clone());
+		}
 	}
-	
+
+	private function bondAngle(x: Int): Int 
+	{
+		if (x % 4 == 0) return 90;
+		else if (x % 4 == 1) return 135;
+		else if (x % 4 == 2) return 0;
+		else return 45;
+	}
 	private function getTileCoordinates(x:Int, y:Int):FlxPoint
 	{
 		return FlxPoint.get(120 + x * 136, 410 + y * 136);
