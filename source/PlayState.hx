@@ -123,6 +123,7 @@ class PlayState extends FlxState
 		} 
 		if (FlxG.mouse.justReleased) {
 			currentMouseSource = new Point(-1, -1); // cancel all previous operations
+			trace(currentMolecule.getName());
 		}
 		if (FlxG.mouse.pressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -155,7 +156,6 @@ class PlayState extends FlxState
 		var lastMolecule: Molecule = undoStack.first();
 		if (!currentMolecule.same(undoStack.first())) {
 			// current molecule has changed, update.
-			trace(currentMolecule.getName());
 			for (i in 0...currentMolecule.height) {
 				for (j in 0...currentMolecule.width) {
 					if (currentMolecule.grid[i][j].type.name != lastMolecule.grid[i][j].type.name) {
