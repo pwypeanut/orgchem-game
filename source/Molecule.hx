@@ -48,6 +48,10 @@ class Molecule {
 		return true;
 	}
 
+	public function isActive(x: Int, y: Int): Bool {
+		return numberBonds(x, y) > 0;
+	}
+
 	public function new(_height: Int, _width: Int) {
 		this.height = _height;
 		this.width = _width;
