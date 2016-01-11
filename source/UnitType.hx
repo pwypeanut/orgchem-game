@@ -1,6 +1,6 @@
 class UnitType {
 	public static var CARBON = new UnitType("Carbon", "C", 4, "");
-	public static var FLOURINE = new UnitType("Flourine", "F", 1, "flouro");
+	public static var FLUORINE = new UnitType("Fluorine", "F", 1, "fluoro");
 	public static var CHLORINE = new UnitType("Chlorine", "Cl", 1, "chloro");
 	public static var BROMINE = new UnitType("Bromine", "Br", 1, "bromo");
 	public static var IODINE = new UnitType("Iodine", "I", 1, "iodo");

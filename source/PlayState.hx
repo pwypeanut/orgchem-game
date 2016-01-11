@@ -27,6 +27,7 @@ class PlayState extends FlxState
 	var currentMolecule: Molecule = new Molecule(4, 4);
 	var undoStack = new GenericStack<Molecule>();
 	var currentMouseSource : Point = new Point(-1, -1);
+	var clickMouseSource: Point = new Point(-1, -1);
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -119,10 +120,46 @@ class PlayState extends FlxState
 						currentMouseSource = gridCoords;
 					}
 				}
+				clickMouseSource = gridCoords;
 			}
 		} 
 		if (FlxG.mouse.justReleased) {
+			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
+			if (gridCoords.x != -1 && gridCoords.y != -1) {
+				if (gridCoords.x == clickMouseSource.x && gridCoords.y == clickMouseSource.y) {
+					// click on a unit
+					if (!currentMolecule.isActive(gridCoords.x, gridCoords.y)) {
+						// not active, allow cycle through all
+						if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.FLUORINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Fluorine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.CHLORINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Chlorine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.BROMINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Bromine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.IODINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Iodine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.CARBON);
+						}
+					} else {
+						// active, allow cycle within type
+						if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.CARBON);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Fluorine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.CHLORINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Chlorine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.BROMINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Bromine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.IODINE);
+						} else if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Iodine") {
+							currentMolecule.grid[gridCoords.x][gridCoords.y] = new Unit(UnitType.FLUORINE);
+						}
+					}
+				}
+			}
 			currentMouseSource = new Point(-1, -1); // cancel all previous operations
+			clickMouseSource = new Point(-1, -1);
+			updateMolecule();
 			trace(currentMolecule.getName());
 		}
 		if (FlxG.mouse.pressed) {
@@ -153,6 +190,10 @@ class PlayState extends FlxState
 			}
 		}
 
+		updateMolecule();
+	}
+
+	private function updateMolecule() {
 		var lastMolecule: Molecule = undoStack.first();
 		if (!currentMolecule.same(undoStack.first())) {
 			// current molecule has changed, update.
