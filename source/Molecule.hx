@@ -115,7 +115,7 @@ class Molecule {
 		return result;
 	}
 
-	private function tracePath(point: Point, targetPoint: Point, prev: Point): Array<Point> {
+	public function tracePath(point: Point, targetPoint: Point, prev: Point): Array<Point> {
 		var currentPath = new Array<Point>();
 		for (i in 0...8) {
 			var newpoint: Point = point.move(i);

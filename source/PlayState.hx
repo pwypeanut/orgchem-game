@@ -160,6 +160,7 @@ class PlayState extends FlxState
 			currentMouseSource = new Point(-1, -1); // cancel all previous operations
 			clickMouseSource = new Point(-1, -1);
 			updateMolecule();
+			updateMainChain();
 			trace(currentMolecule.getName());
 		}
 		if (FlxG.mouse.pressed) {
@@ -193,6 +194,21 @@ class PlayState extends FlxState
 		updateMolecule();
 	}
 
+	private function updateMainChain() {
+		var mainChain = currentMolecule.getMainChain();
+		var path = currentMolecule.tracePath(mainChain.source, mainChain.end, mainChain.source);
+		for (i in 0...currentMolecule.height) {
+			for (j in 0...currentMolecule.width) {
+				if (currentMolecule.grid[i][j].type.name == "Carbon" && currentMolecule.isActive(i, j)) {
+					_gridTiles[i][j].setType(new UnitType("Carbon Side Chain", "C", 4, ""));
+				}
+			}
+		}
+		for (point in path) {
+			_gridTiles[point.x][point.y].setType(new UnitType("Carbon Backbone", "C", 4, ""));
+		}
+	}
+
 	private function updateMolecule() {
 		var lastMolecule: Molecule = undoStack.first();
 		if (!currentMolecule.same(undoStack.first())) {
@@ -203,6 +219,19 @@ class PlayState extends FlxState
 						_grpTiles.remove(_gridTiles[i][j]);
 						_gridTiles[i][j] = new Tile(getTileCoordinates(j, i), currentMolecule.grid[i][j].type);
 						_grpTiles.add(_gridTiles[i][j]);
+					}
+				}
+			}
+			for (i in 0...currentMolecule.height) {
+				for (j in 0...currentMolecule.width) {
+					if (currentMolecule.grid[i][j].type.name == "Carbon") {
+						if (currentMolecule.isActive(i, j) && !lastMolecule.isActive(i, j)) {
+							// carbon has just become active, switch from normal to side chain
+							_gridTiles[i][j].setType(new UnitType("Carbon Side Chain", "C", 4, ""));
+						} else if (!currentMolecule.isActive(i, j) && lastMolecule.isActive(i, j)) {
+							// carbon has just become inactive, switch to normal
+							_gridTiles[i][j].setType(UnitType.CARBON);
+						}
 					}
 				}
 			}
