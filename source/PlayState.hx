@@ -113,7 +113,7 @@ class PlayState extends FlxState
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
 				// they are on a unit
-				if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") {
+				if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon" && currentMolecule.numberBonds(gridCoords.x, gridCoords.y) < 4) {
 					// they must start from a carbon
 					if (currentMolecule.isActive(gridCoords.x, gridCoords.y) || currentMolecule.isEmpty()) {
 						currentMouseSource = gridCoords;

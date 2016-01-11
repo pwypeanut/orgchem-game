@@ -286,7 +286,7 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -313,17 +313,11 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6277.0,
+						"translation.y": 6021.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
-				},
-				{
-					"file": "assets/images/oc_Carbon Backbone.png",
-					"semi_transient": true,
-					"stack_index": 0,
-					"type": "image"
 				},
 				{
 					"buffer": 1,
@@ -368,8 +362,8 @@
 						"selection":
 						[
 							[
-								4994,
-								4994
+								3784,
+								3784
 							]
 						],
 						"settings":
@@ -379,10 +373,10 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2301.0,
+						"translation.y": 1286.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 0,
 					"type": "text"
 				}
 			]

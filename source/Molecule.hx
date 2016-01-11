@@ -160,6 +160,12 @@ class Molecule {
 		var resultantString = "";
 		var currentPositions = new Array<Int>();
 		var firstComponent = false;
+
+		var allOnes = true;
+		for (j in 0...strComponents.length) {
+			if (strComponents[j].position != 0) allOnes = false;
+		}
+
 		if (strComponents.length > 0) {
 			for (i in 0...strComponents.length + 1) {
 				if (i == strComponents.length || (i != 0 && strComponents[i].type != strComponents[i - 1].type)) {
@@ -169,13 +175,19 @@ class Molecule {
 						firstComponent = true;
 					} else componentString += "-";
 
-					for (j in 0...currentPositions.length) {
-						if (j != 0) {
-							componentString += ",";
+					// if all are ones and chain length is less than 2, the 1s are redundant.
+
+					if (!(allOnes && chainLength <= 2)) {
+						for (j in 0...currentPositions.length) {
+							if (j != 0) {
+								componentString += ",";
+							}
+							componentString += currentPositions[j] + 1;
 						}
-						componentString += currentPositions[j] + 1;
+						componentString += "-";
 					}
-					componentString += "-" + countPrefix + strComponents[i - 1].type;
+
+					componentString += countPrefix + strComponents[i - 1].type;
 					resultantString += componentString;
 					currentPositions = new Array<Int>();
 				}
@@ -339,24 +351,54 @@ class Molecule {
 			}
 		}
 
+		var finalStr = processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length);
+		var bracketsReq = false;
+		for (i in 0...finalStr.length) {
+			if (finalStr.charAt(i) == '-' || finalStr.charAt(i) == ' ') {
+				bracketsReq = true;
+			}
+		}
+
 		if (strBest.length == 0) {
-			sideBranchMemo.set(getMemoState(starting, source), {
-				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
-				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
-			});
-			return {
-				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
-				mainString: processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl"
-			};
+			if (bracketsReq) {
+				sideBranchMemo.set(getMemoState(starting, source), {
+					completeString: "(" + finalStr + "yl)",
+					mainString: finalStr + "yl"
+				});
+				return {
+					completeString: "(" + finalStr + "yl)",
+					mainString: finalStr + "yl"
+				};
+			} else {
+				sideBranchMemo.set(getMemoState(starting, source), {
+					completeString: finalStr + "yl",
+					mainString: finalStr + "yl"
+				});
+				return {
+					completeString: finalStr + "yl",
+					mainString: finalStr + "yl"
+				};
+			}
 		} else {
-			sideBranchMemo.set(getMemoState(starting, source), {
-				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
-				mainString: strBest[0].mainType
-			});
-			return {
-				completeString: "(" + processStringComponents(strBest, tracePath(sourceMain, endMain, sourceMain).length) + "yl)",
-				mainString: strBest[0].mainType
-			};
+			if (bracketsReq) {
+				sideBranchMemo.set(getMemoState(starting, source), {
+					completeString: "(" + finalStr + "yl)",
+					mainString: strBest[0].mainType
+				});
+				return {
+					completeString: "(" + finalStr + "yl)",
+					mainString: strBest[0].mainType
+				};
+			} else {
+				sideBranchMemo.set(getMemoState(starting, source), {
+					completeString: finalStr + "yl",
+					mainString: strBest[0].mainType
+				});
+				return {
+					completeString: finalStr + "yl",
+					mainString: strBest[0].mainType
+				};
+			}
 		}
 	}
 
