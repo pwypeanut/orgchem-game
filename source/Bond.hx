@@ -23,8 +23,6 @@ class Bond extends FlxSprite {
 		
 		this.scale.set(0.5, 0.5);
 		
-		//trace(this.x, this.y);
-		
 		setAngle(degrees);
 		setType(1);
 		this.kill();

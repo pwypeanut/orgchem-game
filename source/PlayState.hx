@@ -21,7 +21,6 @@ class PlayState extends FlxState
 	static var gridWidth = 4;
 	var _grpTiles:FlxTypedGroup<Tile>;
 	var _gridTiles:Array<Array<Tile>>;
-	var _hydrogenAtoms = new Array<Array<Array<HydrogenAtom>>>();
 	
 	var _grpBonds:FlxTypedGroup<Bond>;
 	var _gridBonds:Array<Array<Array<Bond>>>;
@@ -97,22 +96,10 @@ class PlayState extends FlxState
 		}
 
 		for (i in 0...gridHeight) {
-			var row = new Array<Array<HydrogenAtom>>();
 			for (j in 0...gridWidth) {
-				row.push(new Array<HydrogenAtom>());
-			}
-			_hydrogenAtoms.push(row);
-		}
-
-		for (i in 0...gridHeight) {
-			for (j in 0...gridWidth) {
-				setHydrogen(i, j, 4); // give 4 hydrogen to each carbon.
+				_gridTiles[i][j].updateHydrogen(4, this);
 			}
 		}
-	}
-
-	public function setHydrogen(x: Int, y: Int, number: Int) {
-
 	}
 	
 	/**
@@ -130,6 +117,7 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+
 
 		if (FlxG.mouse.justPressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -288,6 +276,11 @@ class PlayState extends FlxState
 					_gridTiles[i][j].setActivated(currentMolecule.isActive(i, j));
 				}
 			}
+			for (i in 0...currentMolecule.height) {
+				for (j in 0...currentMolecule.width) {
+					_gridTiles[i][j].updateHydrogen(_gridTiles[i][j].type.valence - currentMolecule.numberBonds(i, j), this);
+				}
+			}
 			undoStack.add(currentMolecule.clone());
 		}
 	}
@@ -301,10 +294,10 @@ class PlayState extends FlxState
 	}
 	private function getTileCoordinates(x:Int, y:Int):FlxPoint
 	{
-		return FlxPoint.get(120 + x * 136, 410 + y * 136);
+		return FlxPoint.get(99 + x * 150, 389 + y * 150);
 	}
 	private function getTile(x:Float, y:Float):Point {
-		var retPoint = new Point(int((y - 410) / 136), int((x - 120) / 136));
+		var retPoint = new Point(int((y - 389) / 150), int((x - 99) / 150));
 		if (retPoint.x < 0 || retPoint.y < 0 || retPoint.x >= gridHeight || retPoint.y >= gridWidth) return new Point(-1, -1);
 		var error = FlxMath.getDistance(getTileCentreCoordinates(retPoint.y, retPoint.x), new FlxPoint(x, y));
 		if (error > 60) return new Point(-1, -1);
