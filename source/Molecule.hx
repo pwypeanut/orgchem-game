@@ -239,9 +239,6 @@ class Molecule {
 		var endMain = new Point(0, 0);
 		for (i in 0...this.height) {
 			for (j in 0...this.width) {
-				if (i == starting.x && j == starting.y) {
-					continue;
-				}
 				if (numberBonds(i, j) == 0) {
 					continue;
 				}
@@ -252,7 +249,7 @@ class Molecule {
 					continue;
 				}
 				var path: Array<Point> = tracePath(starting, new Point(i, j), starting);
-				if (path[1].x == source.x && path[1].y == source.y) {
+				if (path.length > 1 && path[1].x == source.x && path[1].y == source.y) {
 					// not in this side chain
 					continue;
 				}

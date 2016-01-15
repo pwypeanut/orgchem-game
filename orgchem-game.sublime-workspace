@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"curre",
+				"currentMolecule	Molecule"
+			],
+			[
+				"current",
+				"currentMouseSource	Point"
+			],
+			[
 				"getTile",
 				"getTileCentreCoordinates"
 			],
@@ -67,7 +75,7 @@
 			"file": "source/Molecule.hx",
 			"settings":
 			{
-				"buffer_size": 16777,
+				"buffer_size": 17430,
 				"line_ending": "Unix"
 			}
 		},
@@ -75,7 +83,7 @@
 			"file": "source/MenuState.hx",
 			"settings":
 			{
-				"buffer_size": 1332,
+				"buffer_size": 828,
 				"line_ending": "Windows"
 			}
 		},
@@ -83,7 +91,7 @@
 			"file": "source/PlayState.hx",
 			"settings":
 			{
-				"buffer_size": 7598,
+				"buffer_size": 11289,
 				"line_ending": "Windows"
 			}
 		}
@@ -123,19 +131,17 @@
 		"/home/wenyuen/orgchem-game",
 		"/home/wenyuen/orgchem-game/assets",
 		"/home/wenyuen/orgchem-game/assets/images",
-		"/home/wenyuen/orgchem-game/assets/music",
-		"/home/wenyuen/orgchem-game/assets/sounds",
 		"/home/wenyuen/orgchem-game/source"
 	],
 	"file_history":
 	[
+		"/home/wenyuen/orgchem-game/source/UnitType.hx",
 		"/home/wenyuen/orgchem-game/source/PlayState.hx",
 		"/home/wenyuen/orgchem-game/source/Unit.hx",
 		"/home/wenyuen/orgchem-game/source/Point.hx",
 		"/home/wenyuen/orgchem-game/source/MolecularFormula.hx",
 		"/home/wenyuen/orgchem-game/source/Molecule.hx",
 		"/home/wenyuen/orgchem-game/source/Main.hx",
-		"/home/wenyuen/orgchem-game/source/UnitType.hx",
 		"/home/wenyuen/orgchem-game/source/Bond.hx",
 		"/home/wenyuen/orgchem-game/source/MenuState.hx",
 		"/home/wenyuen/FlixelTut/FlixelTut.sublime-build",
@@ -295,15 +301,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16777,
+						"buffer_size": 17430,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11800,
-								11800
+								14752,
+								14752
 							]
 						],
 						"settings":
@@ -313,7 +319,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6021.0,
+						"translation.y": 5944.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
@@ -325,15 +331,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1332,
+						"buffer_size": 828,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								239,
-								239
+								383,
+								383
 							]
 						],
 						"settings":
@@ -355,15 +361,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7598,
+						"buffer_size": 11289,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3784,
-								3784
+								493,
+								493
 							]
 						],
 						"settings":
@@ -373,7 +379,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1286.0,
+						"translation.y": 24.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,

@@ -28,6 +28,8 @@ class PlayState extends FlxState
 	var undoStack = new GenericStack<Molecule>();
 	var currentMouseSource : Point = new Point(-1, -1);
 	var clickMouseSource: Point = new Point(-1, -1);
+
+	var currentText: FlxText = new FlxText(0, 0, 100, "hi");
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -161,7 +163,11 @@ class PlayState extends FlxState
 			clickMouseSource = new Point(-1, -1);
 			updateMolecule();
 			updateMainChain();
-			trace(currentMolecule.getName());
+			remove(currentText);
+			currentText = new FlxText(0, 0, 100, currentMolecule.getName());
+			currentText.textField.width = 1000;
+			currentText.setFormat(null, 20, 0);
+			add(currentText);
 		}
 		if (FlxG.mouse.pressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -195,6 +201,7 @@ class PlayState extends FlxState
 	}
 
 	private function updateMainChain() {
+		if (currentMolecule.isEmpty()) return;
 		var mainChain = currentMolecule.getMainChain();
 		var path = currentMolecule.tracePath(mainChain.source, mainChain.end, mainChain.source);
 		for (i in 0...currentMolecule.height) {
