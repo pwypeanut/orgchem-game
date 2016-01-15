@@ -21,6 +21,7 @@ class PlayState extends FlxState
 	static var gridWidth = 4;
 	var _grpTiles:FlxTypedGroup<Tile>;
 	var _gridTiles:Array<Array<Tile>>;
+	var _hydrogenAtoms = new Array<Array<Array<HydrogenAtom>>>();
 	
 	var _grpBonds:FlxTypedGroup<Bond>;
 	var _gridBonds:Array<Array<Array<Bond>>>;
@@ -94,6 +95,24 @@ class PlayState extends FlxState
 				_grpBonds.add(bond);
 			}
 		}
+
+		for (i in 0...gridHeight) {
+			var row = new Array<Array<HydrogenAtom>>();
+			for (j in 0...gridWidth) {
+				row.push(new Array<HydrogenAtom>());
+			}
+			_hydrogenAtoms.push(row);
+		}
+
+		for (i in 0...gridHeight) {
+			for (j in 0...gridWidth) {
+				setHydrogen(i, j, 4); // give 4 hydrogen to each carbon.
+			}
+		}
+	}
+
+	public function setHydrogen(x: Int, y: Int, number: Int) {
+
 	}
 	
 	/**
@@ -264,6 +283,11 @@ class PlayState extends FlxState
 					}
 				}
 			}
+			for (i in 0...currentMolecule.height) {
+				for (j in 0...currentMolecule.width) {
+					_gridTiles[i][j].setActivated(currentMolecule.isActive(i, j));
+				}
+			}
 			undoStack.add(currentMolecule.clone());
 		}
 	}
@@ -281,7 +305,7 @@ class PlayState extends FlxState
 	}
 	private function getTile(x:Float, y:Float):Point {
 		var retPoint = new Point(int((y - 410) / 136), int((x - 120) / 136));
-		if (retPoint.x < 0 || retPoint.y < 0 || retPoint.x >= 4 || retPoint.y >= 4) return new Point(-1, -1);
+		if (retPoint.x < 0 || retPoint.y < 0 || retPoint.x >= gridHeight || retPoint.y >= gridWidth) return new Point(-1, -1);
 		var error = FlxMath.getDistance(getTileCentreCoordinates(retPoint.y, retPoint.x), new FlxPoint(x, y));
 		if (error > 60) return new Point(-1, -1);
 		else return retPoint;

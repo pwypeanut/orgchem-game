@@ -15,6 +15,7 @@ class Tile extends FlxSprite {
 		
 		this.height = 120;
 		this.width = 120;
+		this.alpha = 0.5;
 		
 		if (type == null) {
 			setType(UnitType.CARBON);
@@ -36,7 +37,6 @@ class Tile extends FlxSprite {
 	public function setActivated(activated:Bool) {
 		if (this.activated && !activated) {
 			this.activated = false;
-			trace(this.alpha);
 			FlxTween.tween(this, { alpha: 0.5 }, 0.2, { type: FlxTween.ONESHOT } );
 		}
 		

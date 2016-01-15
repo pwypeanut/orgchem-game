@@ -3,6 +3,7 @@ package;
 import flixel.FlxSprite;
 import flixel.util.FlxPoint;
 import flixel.util.FlxAngle;
+import flixel.tweens.FlxTween;
 
 /**
  * ...
@@ -54,9 +55,12 @@ class Bond extends FlxSprite {
 	
 	public function showBond() {
 		this.revive();
+		this.alpha = 0;
+		FlxTween.tween(this, { alpha: 1 }, 0.4, { type: FlxTween.ONESHOT } );
 	}
 	
 	public function hideBond() {
+		FlxTween.tween(this, { alpha: 0 }, 0.1, { type: FlxTween.ONESHOT } );
 		this.kill();
 	}
 }
