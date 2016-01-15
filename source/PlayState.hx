@@ -24,7 +24,7 @@ class PlayState extends FlxState
 	
 	var _grpBonds:FlxTypedGroup<Bond>;
 	var _gridBonds:Array<Array<Array<Bond>>>;
-	var currentMolecule: Molecule = new Molecule(4, 4);
+	var currentMolecule: Molecule = new Molecule(gridHeight, gridWidth);
 	var undoStack = new GenericStack<Molecule>();
 	var currentMouseSource : Point = new Point(-1, -1);
 	var clickMouseSource: Point = new Point(-1, -1);
@@ -111,12 +111,42 @@ class PlayState extends FlxState
 		super.destroy();
 	}
 
+	public function clearGrid() {
+		currentMolecule = new Molecule(gridHeight, gridWidth);
+		updateMolecule();
+		updateName();
+	}
+
+	public function undoMove() {
+		if (undoStack.isEmpty()) return;
+		var latest = undoStack.first().clone();
+		undoStack.pop();
+		if (undoStack.isEmpty()) {
+			undoStack.add(latest);
+			return;
+		}
+		currentMolecule = undoStack.first().clone();
+		undoStack.pop();
+		updateMolecule(latest, false);
+		updateName();
+	}
+
 	/**
 	 * Function that is called once every frame.
 	 */
 	override public function update():Void
 	{
 		super.update();
+
+		if (FlxG.keys.justPressed.D) {
+			// clear all
+			clearGrid();
+		}
+
+		if (FlxG.keys.justPressed.U) {
+			// undo last move
+			undoMove();
+		}
 
 
 		if (FlxG.mouse.justPressed) {
@@ -170,11 +200,7 @@ class PlayState extends FlxState
 			clickMouseSource = new Point(-1, -1);
 			updateMolecule();
 			updateMainChain();
-			remove(currentText);
-			currentText = new FlxText(0, 0, 100, currentMolecule.getName());
-			currentText.textField.width = 1000;
-			currentText.setFormat(null, 20, 0);
-			add(currentText);
+			updateName();
 		}
 		if (FlxG.mouse.pressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -207,6 +233,14 @@ class PlayState extends FlxState
 		updateMolecule();
 	}
 
+	private function updateName() {
+		remove(currentText);
+		currentText = new FlxText(0, 0, 100, currentMolecule.getName());
+		currentText.textField.width = 1000;
+		currentText.setFormat(null, 20, 0);
+		add(currentText);
+	}
+
 	private function updateMainChain() {
 		if (currentMolecule.isEmpty()) return;
 		var mainChain = currentMolecule.getMainChain();
@@ -223,9 +257,12 @@ class PlayState extends FlxState
 		}
 	}
 
-	private function updateMolecule() {
-		var lastMolecule: Molecule = undoStack.first();
-		if (!currentMolecule.same(undoStack.first())) {
+	private function updateMolecule(?lastMolecule: Molecule, ?allowUpdateHydrogen: Bool = true) {
+		if (lastMolecule == null) {
+			//trace("null");
+			lastMolecule = undoStack.first();
+		}
+		if (!currentMolecule.same(lastMolecule)) {
 			// current molecule has changed, update.
 			for (i in 0...currentMolecule.height) {
 				for (j in 0...currentMolecule.width) {
@@ -273,12 +310,12 @@ class PlayState extends FlxState
 			}
 			for (i in 0...currentMolecule.height) {
 				for (j in 0...currentMolecule.width) {
-					_gridTiles[i][j].setActivated(currentMolecule.isActive(i, j));
+					if (allowUpdateHydrogen) _gridTiles[i][j].updateHydrogen(_gridTiles[i][j].type.valence - currentMolecule.numberBonds(i, j), this);
 				}
 			}
 			for (i in 0...currentMolecule.height) {
 				for (j in 0...currentMolecule.width) {
-					_gridTiles[i][j].updateHydrogen(_gridTiles[i][j].type.valence - currentMolecule.numberBonds(i, j), this);
+					_gridTiles[i][j].setActivated(currentMolecule.isActive(i, j));
 				}
 			}
 			undoStack.add(currentMolecule.clone());
