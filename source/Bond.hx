@@ -25,7 +25,7 @@ class Bond extends FlxSprite {
 		
 		setAngle(degrees);
 		setType(1);
-		this.kill();
+		this.alpha = 0;
 	}
 	
 	public function setAngle(degrees:Int) {
@@ -51,14 +51,20 @@ class Bond extends FlxSprite {
 		return type;
 	}
 	
-	public function showBond() {
-		this.revive();
+	public function fadeIn() {
 		this.alpha = 0;
 		FlxTween.tween(this, { alpha: 1 }, 0.4, { type: FlxTween.ONESHOT } );
 	}
 	
-	public function hideBond() {
+	public function fadeOut() {
 		FlxTween.tween(this, { alpha: 0 }, 0.1, { type: FlxTween.ONESHOT } );
-		this.kill();
+	}
+	
+	public function hide() {
+		this.alpha = 0;
+	}
+	
+	public function show() {
+		this.alpha = 1;
 	}
 }

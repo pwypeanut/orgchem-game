@@ -4,6 +4,7 @@ class UnitType {
 	public static var CHLORINE = new UnitType("Chlorine", "Cl", 1, "chloro");
 	public static var BROMINE = new UnitType("Bromine", "Br", 1, "bromo");
 	public static var IODINE = new UnitType("Iodine", "I", 1, "iodo");
+	public static var TYPES = [CARBON, FLUORINE, CHLORINE, BROMINE, IODINE];
 	public var name: String;
 	public var symbol: String;
 	public var valence: Int;
