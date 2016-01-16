@@ -92,10 +92,10 @@ class PlayState extends FlxState
 		}
 		
 		// Top Right/Bottom Left Bonds
-		for (i in (1...gridWidth)) {
+		for (i in (0...gridWidth - 1)) {
 			for (j in (1...gridHeight)) {
-				var bond = new Bond(pointAverage(getTileCentreCoordinates(i, j), getTileCentreCoordinates(i-1, j-1)), 135);
-				_gridBonds[j][i][1] = _gridBonds[j - 1][i - 1][5] = bond;
+				var bond = new Bond(pointAverage(getTileCentreCoordinates(i, j), getTileCentreCoordinates(i+1, j-1)), 135);
+				_gridBonds[j][i][1] = _gridBonds[j - 1][i + 1][5] = bond;
 				_grpBonds.add(bond);
 			}
 		}
