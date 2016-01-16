@@ -6,7 +6,7 @@ import flixel.tweens.FlxTween;
 
 class HydrogenAtom extends FlxSprite {
 	
-	public var _hidden = true;
+	private var _hidden = true;
 	
 	public function new(x: Float, y: Float) {
 		super(x, y);
