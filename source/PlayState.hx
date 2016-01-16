@@ -161,6 +161,7 @@ class PlayState extends FlxState
 				}
 				clickMouseSource = gridCoords;
 			}
+			updateMolecule();
 		} 
 		if (FlxG.mouse.justReleased) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -228,9 +229,8 @@ class PlayState extends FlxState
 					}
 				}
 			}
+			updateMolecule();
 		}
-
-		updateMolecule();
 	}
 
 	private function updateName() {
