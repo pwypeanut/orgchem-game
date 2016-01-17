@@ -42,7 +42,7 @@ class PlayState extends FlxState
 		undoStack.add(currentMolecule.clone());
 		
 		this.bgColor = 0xffffffff;
-		FlxG.debugger.drawDebug = true;
+		//FlxG.debugger.drawDebug = true;
 		FlxG.camera.antialiasing = true;
 		
 		_hydrogenLayer = new FlxTypedGroup<FlxTypedGroup<HydrogenAtom>>();
