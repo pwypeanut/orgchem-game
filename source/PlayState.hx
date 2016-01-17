@@ -32,7 +32,7 @@ class PlayState extends FlxState
 	var currentMouseSource : Point = new Point(-1, -1);
 	var clickMouseSource: Point = new Point(-1, -1);
 
-	var currentText: FlxText = new FlxText(0, 0, 100, "hi");
+	var _ui:UI;
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -102,6 +102,9 @@ class PlayState extends FlxState
 		
 		
 		add(_hydrogenLayer);
+		
+		_ui = new UI();
+		add(_ui);
 	}
 	
 	/**
@@ -241,11 +244,7 @@ class PlayState extends FlxState
 	}
 
 	private function updateName() {
-		remove(currentText);
-		currentText = new FlxText(0, 0, 100, currentMolecule.getName());
-		currentText.textField.width = 1000;
-		currentText.setFormat(null, 20, 0);
-		add(currentText);
+		_ui._txtName.text = currentMolecule.getName();
 	}
 
 	private function updateMainChain() {
