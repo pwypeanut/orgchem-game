@@ -32,7 +32,7 @@ class PlayState extends FlxState
 	var currentMouseSource : Point = new Point(-1, -1);
 	var clickMouseSource: Point = new Point(-1, -1);
 
-	var currentText: FlxText = new FlxText(0, 0, 100, "hi");
+	var _ui:UI;
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -42,7 +42,7 @@ class PlayState extends FlxState
 		undoStack.add(currentMolecule.clone());
 		
 		this.bgColor = 0xffffffff;
-		FlxG.debugger.drawDebug = true;
+		//FlxG.debugger.drawDebug = true;
 		FlxG.camera.antialiasing = true;
 		
 		_hydrogenLayer = new FlxTypedGroup<FlxTypedGroup<HydrogenAtom>>();
@@ -92,16 +92,19 @@ class PlayState extends FlxState
 		}
 		
 		// Top Right/Bottom Left Bonds
-		for (i in (1...gridWidth)) {
+		for (i in (0...gridWidth - 1)) {
 			for (j in (1...gridHeight)) {
-				var bond = new Bond(pointAverage(getTileCentreCoordinates(i, j), getTileCentreCoordinates(i-1, j-1)), 135);
-				_gridBonds[j][i][1] = _gridBonds[j - 1][i - 1][5] = bond;
+				var bond = new Bond(pointAverage(getTileCentreCoordinates(i, j), getTileCentreCoordinates(i+1, j-1)), 135);
+				_gridBonds[j][i][1] = _gridBonds[j - 1][i + 1][5] = bond;
 				_grpBonds.add(bond);
 			}
 		}
 		
 		
 		add(_hydrogenLayer);
+		
+		_ui = new UI();
+		add(_ui);
 	}
 	
 	/**
@@ -163,13 +166,9 @@ class PlayState extends FlxState
 				}
 				clickMouseSource = gridCoords;
 			}
-<<<<<<< HEAD
 			updateMolecule();
 		} 
-=======
-		}
 		
->>>>>>> c2c151f2ab9eb782eefe0531cde6595f57b92499
 		if (FlxG.mouse.justReleased) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
@@ -206,6 +205,7 @@ class PlayState extends FlxState
 			updateMainChain();
 			updateName();
 		}
+		
 		if (FlxG.mouse.pressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (currentMouseSource.x != -1 && currentMouseSource.y != -1) {
@@ -226,7 +226,8 @@ class PlayState extends FlxState
 								}
 								currentMolecule.adjacency[currentMouseSource.x][currentMouseSource.y][d] = 1;
 								currentMolecule.adjacency[gridCoords.x][gridCoords.y][(d + 4) % 8] = 1;
-								currentMouseSource = gridCoords;
+								if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") currentMouseSource = gridCoords;
+								else currentMouseSource = new Point(-1, -1);
 							}
 						}
 					}
@@ -234,14 +235,11 @@ class PlayState extends FlxState
 			}
 			updateMolecule();
 		}
+		updateHydrogens();
 	}
 
 	private function updateName() {
-		remove(currentText);
-		currentText = new FlxText(0, 0, 100, currentMolecule.getName());
-		currentText.textField.width = 1000;
-		currentText.setFormat(null, 20, 0);
-		add(currentText);
+		_ui._txtName.text = currentMolecule.getName();
 	}
 
 	private function updateMainChain() {
@@ -260,9 +258,16 @@ class PlayState extends FlxState
 		}
 	}
 
+	private function updateHydrogens() {
+		for (i in 0...currentMolecule.height) {
+			for (j in 0...currentMolecule.width) {
+				_gridTiles[i][j].updateHydrogen(_gridTiles[i][j].type.valence - currentMolecule.numberBonds(i, j));
+			}
+		}
+	}
+
 	private function updateMolecule(?lastMolecule: Molecule) {
 		if (lastMolecule == null) {
-			//trace("null");
 			lastMolecule = undoStack.first();
 		}
 		if (!currentMolecule.same(lastMolecule)) {
@@ -301,10 +306,10 @@ class PlayState extends FlxState
 							}
 						}
 					}
-					_gridTiles[i][j].updateHydrogen(_gridTiles[i][j].type.valence - currentMolecule.numberBonds(i, j));
 					_gridTiles[i][j].setActivated(currentMolecule.isActive(i, j));
 				}
 			}
+			updateHydrogens();
 			undoStack.add(currentMolecule.clone());
 		}
 	}

@@ -69,10 +69,9 @@ class Tile extends FlxSprite {
 	public function updateHydrogen(count: Int) {
 		// add hydrogens
 		for (i in 0...4) {
-			hydrogens.members[i].hide();
 			if (this.activated && i < count) {
 				hydrogens.members[i].fadeIn();
-			}
+			} else hydrogens.members[i].hide();
 		}
 	}
 	
