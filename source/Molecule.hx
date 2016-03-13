@@ -399,7 +399,7 @@ class Molecule {
 		}
 	}
 
-	public function getMainChain(): ChainInfo {
+	public function getMainChain(?sourceFixed: Point, ?endFixed: Point, ?fixedLength: Int): ChainInfo {
 		var bestMain = new Array<AdjInfo>();
 		var sourceMain = new Point(0, 0);
 		var endMain = new Point(0, 0);
@@ -410,6 +410,13 @@ class Molecule {
 					for (l in 0...this.width) {
 						var source = new Point(i, j);
 						var end = new Point(k, l);
+
+						if (sourceFixed != null && endFixed != null) {
+							if (source.x != sourceFixed.x || end.x != endFixed.x || source.y != sourceFixed.y || end.y != endFixed.y) {
+								// if source and end are fixed and incorrect, don't attempt.
+								continue;
+							}
+						}
 
 						// ensure source, end are "selected"
 						if (numberBonds(source.x, source.y) == 0) {
@@ -432,6 +439,13 @@ class Molecule {
 
 						// find path and find branches
 						var path = tracePath(source, end, source);
+
+						if (fixedLength != null) {
+							if (path.length != fixedLength) {
+								continue;
+							}
+						}
+
 						var sideBranches = new Array<AdjInfo>();
 						var count = 0;
 						for (point in path) {
@@ -524,6 +538,70 @@ class Molecule {
 			}
 		}
 		return {sideChains: bestMain, source: sourceMain, end: endMain};
+	}
+
+	public function getWrongMainChainName(): String {
+		sideBranchMemo = new Map<Int, MoleculeString>();
+		var mainChain: ChainInfo = getMainChain();
+		var bestMain: Array<AdjInfo> = mainChain.sideChains;
+		var sourceMain: Point = mainChain.source;
+		var endMain: Point = mainChain.end;
+
+		var len: Int = tracePath(sourceMain, endMain, sourceMain).length;
+		if (len == 1) return getName();
+		mainChain = getMainChain(null, null, len - 1);
+		if (mainChain.source.x != 0 || mainChain.source.y != 0 || mainChain.end.x != 0 || mainChain.end.y != 0) {
+			bestMain = mainChain.sideChains;
+			sourceMain = mainChain.source;
+			endMain = mainChain.end;
+		}
+
+		var strComponents = new Array<StrComponent>();
+		for (i in 0...bestMain.length) {
+			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
+		}
+
+		return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+	}
+
+	public function getFlippedName(): String {
+		sideBranchMemo = new Map<Int, MoleculeString>();
+		var mainChain: ChainInfo = getMainChain();
+		var bestMain: Array<AdjInfo> = mainChain.sideChains;
+		var sourceMain: Point = mainChain.source;
+		var endMain: Point = mainChain.end;
+
+		mainChain = getMainChain(mainChain.end, mainChain.source);
+		bestMain = mainChain.sideChains;
+		sourceMain = mainChain.source;
+		endMain = mainChain.end;
+
+		var strComponents = new Array<StrComponent>();
+		for (i in 0...bestMain.length) {
+			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
+		}
+
+		return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
 	}
 
 	public function getName(): String {
