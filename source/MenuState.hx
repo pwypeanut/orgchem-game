@@ -15,12 +15,28 @@ class MenuState extends FlxState
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
+	public var _stageWidth:Int = 768;
+	public var _stageHeight:Int = 1024;
+	var _btnNomenclature:FlxButton; 
+	
 	override public function create():Void
 	{
 		super.create();
 		
-		Reg.ps = new PlayState();
-		FlxG.switchState(Reg.ps);
+		this.bgColor = 0xffffffff;
+		
+		var _btnWidth = 600;
+		var _btnHeight = 150;
+		
+		_btnNomenclature = new FlxButton(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 + _btnHeight / 2);
+		_btnNomenclature.loadGraphic("assets/images/oc_Menu Button 1.png");
+		add(_btnNomenclature);
+		
+		
+		_btnNomenclature.onDown.callback = function () {
+			Reg.ps = new PlayState();
+			FlxG.switchState(Reg.ps);
+		}
 	}
 	
 	/**

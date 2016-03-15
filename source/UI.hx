@@ -3,9 +3,11 @@ package;
 import flixel.FlxSprite;
 import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
+import flixel.ui.FlxBar;
 import flixel.ui.FlxButton;
 import flixel.util.FlxGradient;
 import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
 
 using flixel.util.FlxSpriteUtil;
 
@@ -19,6 +21,9 @@ class UI extends FlxTypedGroup<FlxSprite>
 	public var _btnClear:FlxButton;
 	public var _btnUndo:FlxButton;
 	public var _btnConfirm:FlxButton;
+	public var _timeLeftBar:FlxBar;
+	
+	public var _modal:Modal;
 
 	public function new(MaxSize:Int=0) 
 	{
@@ -36,19 +41,46 @@ class UI extends FlxTypedGroup<FlxSprite>
 		_btnClear = new FlxButton((_stageWidth - _boxWidth) / 2 - _btnWidth + 20, 50 + _boxHeight - _btnWidth - 20);
 		_btnClear.loadGraphic("assets/images/oc_Cancel Button.png", false, 158, 158);
 		_btnClear.scale.set(0.5, 0.5);
+		_btnClear.updateHitbox();
 		_btnClear.onUp.callback = Reg.ps.clearGrid;
 		add(_btnClear);
 		
 		_btnUndo = new FlxButton((_stageWidth - _boxWidth) / 2 - _btnWidth + 20, 50 + _boxHeight - _btnWidth * 2 - 30);
 		_btnUndo.loadGraphic("assets/images/oc_Undo Button.png", false, 158, 158);
 		_btnUndo.scale.set(0.5, 0.5);
+		_btnUndo.updateHitbox();
 		_btnUndo.onUp.callback = Reg.ps.undoMove;
 		add(_btnUndo);
+		
+		_btnConfirm = new FlxButton((_stageWidth + _boxWidth) / 2 - 20, 50 + _boxHeight - _btnWidth - 20);
+		_btnConfirm.loadGraphic("assets/images/oc_Confirm Button.png", false, 158, 158);
+		_btnConfirm.scale.set(0.5, 0.5);
+		_btnConfirm.updateHitbox();
+		add(_btnConfirm);
 		
 		_txtName = new FlxText(0, 200, _stageWidth, "");
 		_txtName.setFormat(null, 20, 0);
 		_txtName.alignment = "center";
-		add(_txtName);
+		//add(_txtName);
+		
+		_timeLeftBar = new FlxBar(0, 0, FlxBar.FILL_TOP_TO_BOTTOM, 15, _stageHeight);
+		_timeLeftBar.createFilledBar(0, 0xaa0071BC);
+		add(_timeLeftBar);
+		
+		_modal = new Modal();
+		_modal.kill();
+		add(_modal);
+	}
+	
+	override public function destroy()
+	{
+		_sprMainBox = FlxDestroyUtil.destroy(_sprMainBox);
+		_btnClear = FlxDestroyUtil.destroy(_btnClear);
+		_btnUndo = FlxDestroyUtil.destroy(_btnUndo);
+		_txtName = FlxDestroyUtil.destroy(_txtName);
+		_timeLeftBar = FlxDestroyUtil.destroy(_timeLeftBar);
+		
+		super.destroy();
 	}
 	
 }

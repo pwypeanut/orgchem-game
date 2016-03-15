@@ -9,6 +9,7 @@ import flixel.ui.FlxButton;
 import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
+import flixel.util.FlxDestroyUtil;
 import haxe.ds.GenericStack;
 import Std.int;
 
@@ -33,6 +34,11 @@ class PlayState extends FlxState
 	var clickMouseSource: Point = new Point(-1, -1);
 
 	var _ui:UI;
+	var timeLength:Float = 120;
+	var timeLeft:Float;
+	var timePassing:Bool = true;
+	
+	var modalShown:Bool = false;
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -44,6 +50,8 @@ class PlayState extends FlxState
 		this.bgColor = 0xffffffff;
 		//FlxG.debugger.drawDebug = true;
 		FlxG.camera.antialiasing = true;
+		
+		timeLeft = timeLength;
 		
 		_hydrogenLayer = new FlxTypedGroup<FlxTypedGroup<HydrogenAtom>>();
 		
@@ -105,6 +113,8 @@ class PlayState extends FlxState
 		
 		_ui = new UI();
 		add(_ui);
+		
+		//_ui._modal.revive();
 	}
 	
 	/**
@@ -113,6 +123,9 @@ class PlayState extends FlxState
 	 */
 	override public function destroy():Void
 	{
+		_ui = FlxDestroyUtil.destroy(_ui);
+		_grpBonds = FlxDestroyUtil.destroy(_grpBonds);
+		_grpTiles = FlxDestroyUtil.destroy(_grpTiles);
 		super.destroy();
 	}
 
@@ -142,6 +155,11 @@ class PlayState extends FlxState
 	override public function update():Void
 	{
 		super.update();
+		
+		_ui._timeLeftBar.currentValue = (timeLeft / timeLength) * 100;
+		if (timePassing) {
+			timeLeft -= FlxG.elapsed;
+		}
 
 		if (FlxG.keys.justPressed.D) {
 			// clear all
@@ -154,7 +172,7 @@ class PlayState extends FlxState
 		}
 
 
-		if (FlxG.mouse.justPressed) {
+		if (FlxG.mouse.justPressed && !modalShown) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
 				// they are on a unit
@@ -169,7 +187,7 @@ class PlayState extends FlxState
 			updateMolecule();
 		} 
 		
-		if (FlxG.mouse.justReleased) {
+		if (FlxG.mouse.justReleased && !modalShown) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
 				if (gridCoords.x == clickMouseSource.x && gridCoords.y == clickMouseSource.y) {
@@ -206,7 +224,7 @@ class PlayState extends FlxState
 			updateName();
 		}
 		
-		if (FlxG.mouse.pressed) {
+		if (FlxG.mouse.pressed && !modalShown) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (currentMouseSource.x != -1 && currentMouseSource.y != -1) {
 				if (gridCoords.x != -1 && gridCoords.y != -1) {
@@ -312,6 +330,11 @@ class PlayState extends FlxState
 			updateHydrogens();
 			undoStack.add(currentMolecule.clone());
 		}
+	}
+	
+	private function submitMolecule()
+	{
+		
 	}
 
 	private function bondAngle(x: Int): Int 
