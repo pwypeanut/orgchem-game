@@ -12,6 +12,7 @@ import flixel.util.FlxRandom;
 import flixel.util.FlxDestroyUtil;
 import haxe.ds.GenericStack;
 import Std.int;
+import Math.random;
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -336,8 +337,46 @@ class PlayState extends FlxState
 	public function submitMolecule()
 	{
 		_ui._modal.setAll("visible", true);
+		var answers: Array<String> = new Array<String>();
+		var name: String = currentMolecule.getName();
+		answers.push(name);
+		if (random() < 0.4) {
+			var wrongName: String = currentMolecule.getFlippedName();
+			if (wrongName != name) answers.push(wrongName);
+		}
+		if (random() < 0.7) {
+			var wrongName: String = currentMolecule.getWrongMainChainName();
+			if (wrongName != name) answers.push(wrongName);
+		}
+
+		var rem: Int = 4 - answers.length;
+
+		for (i in 0...rem) {
+			var pos: Int = Std.int(random() * 3);
+			if (pos == 0) {
+				var wrongName: String = currentMolecule.getMutatedComponentName();
+				if (wrongName != name) answers.push(wrongName);
+				else rem++;
+			} else if (pos == 1) {
+				var wrongName: String = currentMolecule.getMissingComponentName();
+				if (wrongName != name) answers.push(wrongName);
+				else rem++;
+			}
+			else {
+			 	var wrongName: String = currentMolecule.getWrongPrefixName();
+			 	if (wrongName != name) answers.push(wrongName);
+				else rem++;
+			}
+		}
+		for (i in 0...30) {
+			var x : Int = Std.int(random() * 4);
+			var y : Int = Std.int(random() * 4);
+			var tmp = answers[x];
+			answers[x] = answers[y];
+			answers[y] = tmp;
+		}
 		for (i in (0...4)) {
-			_ui._modal._options.members[i]._txtText.text = "test" + i;
+			_ui._modal._options.members[i]._txtText.text = answers[i];
 		}
 		
 	}

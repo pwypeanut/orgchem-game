@@ -1,4 +1,5 @@
 import haxe.ds.ObjectMap;
+import Math.random;
 
 typedef AdjInfo = {carbon: Int, unit: Point, source: Point};
 typedef StrComponent = {type: String, mainType: String, position: Int};
@@ -602,6 +603,95 @@ class Molecule {
 		}
 
 		return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+	}
+
+	public function getWrongPrefixName(): String {
+		sideBranchMemo = new Map<Int, MoleculeString>();
+		var mainChain: ChainInfo = getMainChain();
+		var bestMain: Array<AdjInfo> = mainChain.sideChains;
+		var sourceMain: Point = mainChain.source;
+		var endMain: Point = mainChain.end;
+
+		var strComponents = new Array<StrComponent>();
+		for (i in 0...bestMain.length) {
+			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
+		}
+
+		var len : Int = tracePath(sourceMain, endMain, sourceMain).length;
+
+		if (random() < 0.5 && len != 1) return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length - 1) + "ane";
+		else return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length + 1) + "ane";
+	}
+
+	public function getMissingComponentName(): String {
+		sideBranchMemo = new Map<Int, MoleculeString>();
+		var mainChain: ChainInfo = getMainChain();
+		var bestMain: Array<AdjInfo> = mainChain.sideChains;
+		var sourceMain: Point = mainChain.source;
+		var endMain: Point = mainChain.end;
+
+		var strComponents = new Array<StrComponent>();
+		for (i in 0...bestMain.length) {
+			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
+		}
+
+		if (strComponents.length == 0) return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+		else {
+			var pos: Int = Std.int(random() * strComponents.length);
+			strComponents.splice(pos, 1);
+			return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+		}
+	}
+
+	public function getMutatedComponentName(): String {
+		sideBranchMemo = new Map<Int, MoleculeString>();
+		var mainChain: ChainInfo = getMainChain();
+		var bestMain: Array<AdjInfo> = mainChain.sideChains;
+		var sourceMain: Point = mainChain.source;
+		var endMain: Point = mainChain.end;
+
+		var strComponents = new Array<StrComponent>();
+		for (i in 0...bestMain.length) {
+			if (grid[bestMain[i].unit.x][bestMain[i].unit.y].type.name == "Carbon") {
+				strComponents.push({
+					type: nameSideBranch(bestMain[i].unit, bestMain[i].source).completeString, 
+					position: bestMain[i].carbon,
+					mainType: nameSideBranch(bestMain[i].unit, bestMain[i].source).mainString
+				});
+			} else strComponents.push({
+				type: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix, 
+				position: bestMain[i].carbon,
+				mainType: grid[bestMain[i].unit.x][bestMain[i].unit.y].type.prefix
+			});
+		}
+
+		if (strComponents.length == 0) return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+		else {
+			var pos: Int = Std.int(random() * strComponents.length);
+			var len: Int = tracePath(sourceMain, endMain, sourceMain).length;
+			strComponents[pos].position = Std.int(random() * len);
+			return processStringComponents(strComponents, tracePath(sourceMain, endMain, sourceMain).length) + "ane";
+		}
 	}
 
 	public function getName(): String {
