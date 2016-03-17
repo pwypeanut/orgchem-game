@@ -63,7 +63,7 @@ class PlayState extends FlxState
 		
 		_gridTiles = [for (i in 0...gridHeight) [for (j in 0...gridWidth) null]];
 		
-		optionsSelected = [false for (i in 0...4)];
+		optionsSelected = [for (i in 0...4) false];
 		
 		for (i in (0...gridWidth)) {
 			for (j in (0...gridHeight)) {

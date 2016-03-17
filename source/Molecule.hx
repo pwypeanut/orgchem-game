@@ -541,6 +541,26 @@ class Molecule {
 		return {sideChains: bestMain, source: sourceMain, end: endMain};
 	}
 
+	public function getScore(): Int {
+		var mainChain: ChainInfo = getMainChain();
+		var path = tracePath(mainChain.source, mainChain.end, mainChain.source);
+		var score: Int = 0;
+		for (i in 0...height) {
+			for (j in 0...width) {
+				if (!isActive(i, j)) continue;
+				if (grid[i][j].type.symbol != "C") score += 2;
+			}
+		}
+		for (i in 0...height) {
+			for (j in 0...width) {
+				if (isActive(i, j)) score++;
+			}
+		}
+		for (point in path) score -= numberBonds(point.x, point.y) - countCarbon(point);
+		for (point in path) score += countCarbon(point);
+		return score;
+	}
+
 	public function getWrongMainChainName(): String {
 		sideBranchMemo = new Map<Int, MoleculeString>();
 		var mainChain: ChainInfo = getMainChain();
