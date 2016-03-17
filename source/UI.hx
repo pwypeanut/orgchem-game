@@ -24,6 +24,7 @@ class UI extends FlxTypedGroup<FlxSprite>
 	public var _timeLeftBar:FlxBar;
 	
 	public var _modal:Modal;
+	public var _btnToggleModal:FlxButton;
 
 	public function new(MaxSize:Int=0) 
 	{
@@ -56,6 +57,7 @@ class UI extends FlxTypedGroup<FlxSprite>
 		_btnConfirm.loadGraphic("assets/images/oc_Confirm Button.png", false, 158, 158);
 		_btnConfirm.scale.set(0.5, 0.5);
 		_btnConfirm.updateHitbox();
+		_btnConfirm.onUp.callback = Reg.ps.submitMolecule;
 		add(_btnConfirm);
 		
 		_txtName = new FlxText(0, 200, _stageWidth, "");
@@ -68,7 +70,6 @@ class UI extends FlxTypedGroup<FlxSprite>
 		add(_timeLeftBar);
 		
 		_modal = new Modal();
-		_modal.kill();
 		add(_modal);
 	}
 	

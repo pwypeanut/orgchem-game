@@ -113,6 +113,7 @@ class PlayState extends FlxState
 		
 		_ui = new UI();
 		add(_ui);
+		_ui._modal.setAll("visible", false);
 		
 		//_ui._modal.revive();
 	}
@@ -332,7 +333,16 @@ class PlayState extends FlxState
 		}
 	}
 	
-	private function submitMolecule()
+	public function submitMolecule()
+	{
+		_ui._modal.setAll("visible", true);
+		for (i in (0...4)) {
+			_ui._modal._options.members[i]._txtText.text = "test" + i;
+		}
+		
+	}
+	
+	public function toggleModal()
 	{
 		
 	}
