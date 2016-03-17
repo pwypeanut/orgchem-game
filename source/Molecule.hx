@@ -9,8 +9,8 @@ typedef SideBranchMemoState = {source_x: Int, source_y: Int, starting_x: Int, st
 typedef MoleculeString = {mainString: String, completeString: String};
 
 class Molecule {
-	private var chainPrefixes: Array<String> = ["meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non", "dec", "undec", "dodec", "tridec", "tetradec", "pentadec", "hexadec"];
-	private var countPrefixes: Array<String> = ["", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca", "undeca", "dodeca", "trideca", "tetradeca", "pentadeca", "hexadeca"];
+	private var chainPrefixes: Array<String> = ["meth", "eth", "prop", "but", "pent", "hex", "hept", "oct", "non", "dec", "undec", "dodec", "tridec", "tetradec", "pentadec", "hexadec", "heptadec"];
+	private var countPrefixes: Array<String> = ["", "di", "tri", "tetra", "penta", "hexa", "hepta", "octa", "nona", "deca", "undeca", "dodeca", "trideca", "tetradeca", "pentadeca", "hexadeca", "heptadeca"];
 	private var sideBranchMemo = new Map<Int, MoleculeString>();
 	public var height: Int;
 	public var width: Int;
@@ -209,7 +209,7 @@ class Molecule {
 		return resultantString;
 	}
 
-	private function countCarbon(point: Point): Int {
+	public function countCarbon(point: Point): Int {
 		var numberCarbon = 0;
 		for (m in 0...8) {
 			var newPoint = point.move(m);

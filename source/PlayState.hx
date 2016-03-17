@@ -259,17 +259,19 @@ class PlayState extends FlxState
 	}
 
 	private function updateName() {
+		return;
 		_ui._txtName.text = currentMolecule.getName();
 	}
 
 	private function updateMainChain() {
+		return;
 		if (currentMolecule.isEmpty()) return;
 		var mainChain = currentMolecule.getMainChain();
 		var path = currentMolecule.tracePath(mainChain.source, mainChain.end, mainChain.source);
 		for (i in 0...currentMolecule.height) {
 			for (j in 0...currentMolecule.width) {
 				if (currentMolecule.grid[i][j].type.name == "Carbon" && currentMolecule.isActive(i, j)) {
-					_gridTiles[i][j].setType(new UnitType("Carbon Side Chain", "C", 4, ""));
+					_gridTiles[i][j].setType(new UnitType("Carbon Backbone", "C", 4, "")); // should be side chain
 				}
 			}
 		}
@@ -304,7 +306,7 @@ class PlayState extends FlxState
 					if (currentMolecule.grid[i][j].type.name == "Carbon") {
 						if (currentMolecule.isActive(i, j) && !lastMolecule.isActive(i, j)) {
 							// carbon has just become active, switch from normal to side chain
-							_gridTiles[i][j].setType(new UnitType("Carbon Side Chain", "C", 4, ""));
+							_gridTiles[i][j].setType(new UnitType("Carbon Backbone", "C", 4, "")); // should be side chain
 						} else if (!currentMolecule.isActive(i, j) && lastMolecule.isActive(i, j)) {
 							// carbon has just become inactive, switch to normal
 							_gridTiles[i][j].setType(UnitType.CARBON);
@@ -336,6 +338,24 @@ class PlayState extends FlxState
 	
 	public function submitMolecule()
 	{
+		var highDegree: Int = 0;
+		for (i in 0...gridHeight) {
+			for (j in 0...gridWidth) {
+				if (!currentMolecule.isActive(i, j)) continue;
+				if (currentMolecule.grid[i][j].type.symbol != "C") continue;
+				if (currentMolecule.countCarbon(new Point(i, j)) > 2) highDegree++;
+			}
+		}
+
+		var res = currentMolecule.getMainChain();
+		var mainPath = currentMolecule.tracePath(res.source, res.end, res.source);
+		for (point in mainPath) {
+			if (!currentMolecule.isActive(point.x, point.y)) continue;
+			if (currentMolecule.countCarbon(point) > 2) highDegree--;
+		}
+
+		if (highDegree != 0) return;
+
 		_ui._modal.setAll("visible", true);
 		var answers: Array<String> = new Array<String>();
 		var name: String = currentMolecule.getName();
@@ -368,6 +388,18 @@ class PlayState extends FlxState
 				else rem++;
 			}
 		}
+
+		answers.sort(function(a: String, b:String) {
+			if (a < b) return -1;
+			else if (a == b) return 0;
+			else return 1;
+		});
+		var disabled: Array<Int> = new Array<Int>();
+		for (i in 1...4) {
+			if (answers[i] == answers[i - 1]) disabled.push(i);
+		}
+
+		for (i in 0...disabled.length) answers[disabled[i]] = "-";
 		for (i in 0...30) {
 			var x : Int = Std.int(random() * 4);
 			var y : Int = Std.int(random() * 4);
