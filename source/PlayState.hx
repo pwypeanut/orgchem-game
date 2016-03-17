@@ -417,16 +417,17 @@ class PlayState extends FlxState
 			}
 		}
 
-		for (i in 0...disabled.length) {
-			answers[disabled[i]] = "-";
-			_ui._modal._options.members[disabled[i]].setAll("visible", false);
-		}
+		for (i in 0...disabled.length) answers[disabled[i]] = "-";
+
 		for (i in 0...30) {
 			var x : Int = Std.int(random() * 4);
 			var y : Int = Std.int(random() * 4);
 			var tmp = answers[x];
 			answers[x] = answers[y];
 			answers[y] = tmp;
+		}
+		for (i in 0...4) {
+			if (answers[i] == "-") _ui._modal._options.members[i].setAll("visible", false);
 		}
 		for (i in (0...4)) {
 			_ui._modal._options.members[i]._txtText.text = answers[i];
