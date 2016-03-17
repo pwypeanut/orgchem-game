@@ -40,6 +40,9 @@ class PlayState extends FlxState
 	var timePassing:Bool = true;
 	
 	var modalShown:Bool = false;
+	var name:String = "";
+	var optionsSelected:Array<Bool>;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -49,7 +52,7 @@ class PlayState extends FlxState
 		undoStack.add(currentMolecule.clone());
 		
 		this.bgColor = 0xffffffff;
-		//FlxG.debugger.drawDebug = true;
+		FlxG.debugger.drawDebug = true;
 		FlxG.camera.antialiasing = true;
 		
 		timeLeft = timeLength;
@@ -59,6 +62,8 @@ class PlayState extends FlxState
 		_grpTiles = new FlxTypedGroup<Tile>();
 		
 		_gridTiles = [for (i in 0...gridHeight) [for (j in 0...gridWidth) null]];
+		
+		optionsSelected = [false for (i in 0...4)];
 		
 		for (i in (0...gridWidth)) {
 			for (j in (0...gridHeight)) {
@@ -357,8 +362,13 @@ class PlayState extends FlxState
 		if (highDegree != 0) return;
 
 		_ui._modal.setAll("visible", true);
+		_ui._btnToggleModal.revive();
+		_ui._toggleActive = false;
+		modalShown = true;
+		
 		var answers: Array<String> = new Array<String>();
-		var name: String = currentMolecule.getName();
+		name = currentMolecule.getName();
+		
 		answers.push(name);
 		if (random() < 0.4) {
 			var wrongName: String = currentMolecule.getFlippedName();
@@ -413,9 +423,30 @@ class PlayState extends FlxState
 		
 	}
 	
+	public function submitAnswer(optionNumber: Int) {
+		var answer : String = _ui._modal._options.members[optionNumber]._txtText.text;
+		
+		if (answer != name) {
+			_ui._modal._options.members[optionNumber]._txtText.alpha = 0.2;
+		} else {
+			modalShown = false;
+			_ui._modal.setAll("visible", false);
+			_ui._toggleActive = false;
+			_ui._btnToggleModal.kill();
+		}
+	}
+	
 	public function toggleModal()
 	{
-		
+		if (!modalShown) return;
+		if (_ui._toggleActive) {
+			_ui._btnToggleModal.loadGraphic("assets/images/oc_Hide Button.png");
+			_ui._modal.setAll("visible", true);
+		} else {
+			_ui._btnToggleModal.loadGraphic("assets/images/oc_Show Button.png");
+			_ui._modal.setAll("visible", false);
+		}
+		_ui._toggleActive = !_ui._toggleActive;
 	}
 
 	private function bondAngle(x: Int): Int 

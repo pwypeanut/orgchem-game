@@ -25,6 +25,7 @@ class UI extends FlxTypedGroup<FlxSprite>
 	
 	public var _modal:Modal;
 	public var _btnToggleModal:FlxButton;
+	public var _toggleActive:Bool = false;
 
 	public function new(MaxSize:Int=0) 
 	{
@@ -71,6 +72,14 @@ class UI extends FlxTypedGroup<FlxSprite>
 		
 		_modal = new Modal();
 		add(_modal);
+		
+		_btnToggleModal = new FlxButton(50, _stageHeight - 75 - 50);
+		_btnToggleModal.loadGraphic("assets/images/oc_Hide Button.png", false, 400, 150);
+		_btnToggleModal.scale.set(0.5, 0.5);
+		_btnToggleModal.updateHitbox();
+		_btnToggleModal.kill();
+		_btnToggleModal.onUp.callback = Reg.ps.toggleModal;
+		add(_btnToggleModal);
 	}
 	
 	override public function destroy()

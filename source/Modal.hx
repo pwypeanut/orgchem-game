@@ -51,15 +51,16 @@ class Modal extends FlxSpriteGroup
 			modalOption.y += _modalBox.y;
 			modalOption.x += _modalBox.x;
 			
-			modalOption._txtText.setFormat(18, 0xff000000);
+			modalOption._txtText.setFormat("assets/fonts/OpenSans-Regular.ttf", 24, 0xff000000);
 			modalOption._txtText.x += textPadding;
 			modalOption._txtText.y += textPadding;
 			
 			modalOption._modalOptionSprite.height = modalHeight;
 			modalOption._modalOptionSprite.width = modalWidth;
 			modalOption._modalOptionSprite.makeGraphic(modalWidth, modalHeight, 0xffeeeeee);
+			
+			modalOption._optionNumber = i;
 			add(modalOption);
 		}
 	}
-	
 }
