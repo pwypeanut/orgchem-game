@@ -43,6 +43,8 @@ class PlayState extends FlxState
 	var name:String = "";
 	var optionsSelected:Array<Bool>;
 	
+	var score:Int = 0;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -177,6 +179,8 @@ class PlayState extends FlxState
 			// undo last move
 			undoMove();
 		}
+		
+		_ui._txtScore.text = Std.string(score);
 
 
 		if (FlxG.mouse.justPressed && !modalShown) {
@@ -343,6 +347,8 @@ class PlayState extends FlxState
 	
 	public function submitMolecule()
 	{
+		if (modalShown) return;
+		
 		var highDegree: Int = 0;
 		for (i in 0...gridHeight) {
 			for (j in 0...gridWidth) {
@@ -406,10 +412,15 @@ class PlayState extends FlxState
 		});
 		var disabled: Array<Int> = new Array<Int>();
 		for (i in 1...4) {
-			if (answers[i] == answers[i - 1]) disabled.push(i);
+			if (answers[i] == answers[i - 1]) {
+				disabled.push(i);
+			}
 		}
 
-		for (i in 0...disabled.length) answers[disabled[i]] = "-";
+		for (i in 0...disabled.length) {
+			answers[disabled[i]] = "-";
+			_ui._modal._options.members[disabled[i]].setAll("visible", false);
+		}
 		for (i in 0...30) {
 			var x : Int = Std.int(random() * 4);
 			var y : Int = Std.int(random() * 4);
@@ -423,16 +434,25 @@ class PlayState extends FlxState
 		
 	}
 	
-	public function submitAnswer(optionNumber: Int) {
+	public function submitAnswer(optionNumber: Int) {	
 		var answer : String = _ui._modal._options.members[optionNumber]._txtText.text;
+		optionsSelected[optionNumber] = true;
 		
 		if (answer != name) {
 			_ui._modal._options.members[optionNumber]._txtText.alpha = 0.2;
 		} else {
 			modalShown = false;
+			var attempts = 0;
+			for (i in (0...4)) {
+				if (optionsSelected[i]) attempts++;
+				_ui._modal._options.members[i]._txtText.alpha = 1;
+				_ui._modal._options.members[optionNumber].setAll("visible", true);
+			}
+			score += (4 - attempts) * currentMolecule.getScore();
 			_ui._modal.setAll("visible", false);
 			_ui._toggleActive = false;
 			_ui._btnToggleModal.kill();
+			clearGrid();
 		}
 	}
 	

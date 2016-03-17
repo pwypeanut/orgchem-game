@@ -26,6 +26,8 @@ class UI extends FlxTypedGroup<FlxSprite>
 	public var _modal:Modal;
 	public var _btnToggleModal:FlxButton;
 	public var _toggleActive:Bool = false;
+	
+	public var _txtScore:FlxText;
 
 	public function new(MaxSize:Int=0) 
 	{
@@ -33,10 +35,18 @@ class UI extends FlxTypedGroup<FlxSprite>
 		
 		var _boxWidth = 550, _boxHeight = 270, _borderWidth = 12;
 		
-		_sprMainBox = new FlxSprite((_stageWidth - _boxWidth) / 2, 50);
+		_sprMainBox = new FlxSprite((_stageWidth - _boxWidth - _borderWidth) / 2, 50);
 		_sprMainBox.makeGraphic(_boxWidth + _borderWidth, _boxHeight + _borderWidth);
 		_sprMainBox.drawRoundRect(_borderWidth / 2, _borderWidth / 2, _boxWidth, _boxHeight, 25, 25, 0xfff0f0f0, { thickness: _borderWidth, color: 0xff111111 });
 		add(_sprMainBox);
+		
+		_txtScore = new FlxText(0, _boxHeight / 2 + 50, _stageWidth);
+		
+		_txtScore.setFormat(40);
+		_txtScore.color = 0xff333333;
+		_txtScore.text = "01231312321";
+		_txtScore.alignment = "center";
+		add(_txtScore);
 		
 		var _btnWidth = 158 / 2;
 		
