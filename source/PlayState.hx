@@ -194,7 +194,7 @@ class PlayState extends FlxState
 		_ui._txtScore.text = Std.string(score);
 
 
-		if (FlxG.mouse.justPressed && !modalShown) {
+		if (FlxG.mouse.justPressed && !modalShown && countdownState <= 0) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
 				// they are on a unit
@@ -209,7 +209,7 @@ class PlayState extends FlxState
 			updateMolecule();
 		} 
 		
-		if (FlxG.mouse.justReleased && !modalShown) {
+		if (FlxG.mouse.justReleased && !modalShown && countdownState <= 0) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (gridCoords.x != -1 && gridCoords.y != -1) {
 				if (gridCoords.x == clickMouseSource.x && gridCoords.y == clickMouseSource.y) {
@@ -246,7 +246,7 @@ class PlayState extends FlxState
 			updateName();
 		}
 		
-		if (FlxG.mouse.pressed && !modalShown) {
+		if (FlxG.mouse.pressed && !modalShown && countdownState <= 0) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
 			if (currentMouseSource.x != -1 && currentMouseSource.y != -1) {
 				if (gridCoords.x != -1 && gridCoords.y != -1) {
@@ -487,6 +487,9 @@ class PlayState extends FlxState
 		if (_ui._toggleActive) {
 			_ui._btnToggleModal.loadGraphic("assets/images/oc_Hide Button.png");
 			_ui._modal.setAll("visible", true);
+			for (i in 0...4) {
+				if (_ui._modal._options.members[i]._txtText.text == "-") _ui._modal._options.members[i].setAll("visible", false);
+			}
 		} else {
 			_ui._btnToggleModal.loadGraphic("assets/images/oc_Show Button.png");
 			_ui._modal.setAll("visible", false);
