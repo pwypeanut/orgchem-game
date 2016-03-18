@@ -51,6 +51,8 @@ class PlayState extends FlxState
 	
 	var score:Int = 0;
 	
+	var history:Array<String>;
+	
 	/**
 	 * Function that is called up when to state is created to set it up. 
 	 */
@@ -68,6 +70,7 @@ class PlayState extends FlxState
 		_hydrogenLayer = new FlxTypedGroup<FlxTypedGroup<HydrogenAtom>>();
 		
 		_grpTiles = new FlxTypedGroup<Tile>();
+		history = new Array<String>();
 		
 		_gridTiles = [for (i in 0...gridHeight) [for (j in 0...gridWidth) null]];
 		
@@ -377,6 +380,12 @@ class PlayState extends FlxState
 		}
 
 		if (highDegree != 0) return;
+		
+		var answers: Array<String> = new Array<String>();
+		name = currentMolecule.getName();
+		
+		if (history.indexOf(name) != -1) return;
+		history.push(name);
 
 		
 		
@@ -391,7 +400,11 @@ class PlayState extends FlxState
 		_ui._toggleActive = false;
 		modalShown = true;
 		
+<<<<<<< HEAD
 		answers.push({option: name, error: "OK!"});
+=======
+		answers.push(name);
+>>>>>>> 12bd82c305b4107f6a2fc4629a66b1cce7bee5d6
 		if (random() < 0.4) {
 			var wrongName: String = currentMolecule.getFlippedName();
 			if (wrongName != name) answers.push({option: wrongName, error: "Incorrect direction of main chain!"});
@@ -468,6 +481,7 @@ class PlayState extends FlxState
 				_ui._modal._options.members[i]._txtText.alpha = 1;
 				_ui._modal._options.members[optionNumber].setAll("visible", true);
 			}
+			optionsSelected = [for (i in 0...4) false];
 			score += (4 - attempts) * currentMolecule.getScore();
 			_ui._modal.setAll("visible", false);
 			_ui._toggleActive = false;
