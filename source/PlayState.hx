@@ -10,6 +10,7 @@ import flixel.util.FlxMath;
 import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxDestroyUtil;
+import flixel.tweens.FlxTween;
 import haxe.ds.GenericStack;
 import haxe.ds.StringMap;
 import Std.int;
@@ -51,7 +52,7 @@ class PlayState extends FlxState
 	
 	var score:Int = 0;
 	
-	var history:Array<String>;
+	var countdownState:Int = 3;
 	
 	/**
 	 * Function that is called up when to state is created to set it up. 
@@ -70,7 +71,6 @@ class PlayState extends FlxState
 		_hydrogenLayer = new FlxTypedGroup<FlxTypedGroup<HydrogenAtom>>();
 		
 		_grpTiles = new FlxTypedGroup<Tile>();
-		history = new Array<String>();
 		
 		_gridTiles = [for (i in 0...gridHeight) [for (j in 0...gridWidth) null]];
 		
@@ -131,7 +131,9 @@ class PlayState extends FlxState
 		_ui = new UI();
 		add(_ui);
 		_ui._modal.setAll("visible", false);
+		timePassing = false;
 		
+		FlxTween.tween(_ui._countdownText, { alpha: 0 }, 1, { type: FlxTween.ONESHOT, complete: changeCountdown } );
 		//_ui._modal.revive();
 	}
 	
@@ -380,15 +382,7 @@ class PlayState extends FlxState
 		}
 
 		if (highDegree != 0) return;
-		
-		var answers: Array<String> = new Array<String>();
-		name = currentMolecule.getName();
-		
-		if (history.indexOf(name) != -1) return;
-		history.push(name);
 
-		
-		
 		var answers: Array<OptionClass> = new Array<OptionClass>();
 		name = currentMolecule.getName();
 
@@ -400,11 +394,8 @@ class PlayState extends FlxState
 		_ui._toggleActive = false;
 		modalShown = true;
 		
-<<<<<<< HEAD
-		answers.push({option: name, error: "OK!"});
-=======
-		answers.push(name);
->>>>>>> 12bd82c305b4107f6a2fc4629a66b1cce7bee5d6
+		answers.push( { option: name, error: "OK!" } );
+		
 		if (random() < 0.4) {
 			var wrongName: String = currentMolecule.getFlippedName();
 			if (wrongName != name) answers.push({option: wrongName, error: "Incorrect direction of main chain!"});
@@ -501,6 +492,26 @@ class PlayState extends FlxState
 			_ui._modal.setAll("visible", false);
 		}
 		_ui._toggleActive = !_ui._toggleActive;
+	}
+	
+	private function changeCountdown(tween: FlxTween):Void 
+	{
+		_ui._countdownText.alpha = 1;
+		countdownState -= 1;
+		if (countdownState > 0) {
+			_ui._countdownText.text = Std.string(countdownState);
+			FlxTween.tween(_ui._countdownText, { alpha: 0 }, 1, { type: FlxTween.ONESHOT, complete: changeCountdown } );
+		} else {
+			_ui._countdownText.text = "GO";
+			FlxTween.tween(_ui._countdownOverlay, { alpha: 0 }, 0.5, { type: FlxTween.ONESHOT, complete: countdownOver } );
+			FlxTween.tween(_ui._countdownText, { alpha: 0 }, 0.5, { type: FlxTween.ONESHOT, complete: countdownOver } );
+		}
+	}
+	
+	private function countdownOver(tween: FlxTween) {
+		_ui._countdownOverlay.kill();
+		_ui._countdownText.kill();
+		timePassing = true;
 	}
 
 	private function bondAngle(x: Int): Int 

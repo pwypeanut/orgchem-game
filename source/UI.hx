@@ -27,12 +27,16 @@ class UI extends FlxTypedGroup<FlxSprite>
 	public var _btnToggleModal:FlxButton;
 	public var _toggleActive:Bool = false;
 	
+	public var _countdownOverlay:FlxSprite;
+	public var _countdownText:FlxText;
+	
+	
 	public var _txtScore:FlxText;
 
 	public function new(MaxSize:Int=0) 
 	{
 		super(MaxSize);
-		
+
 		var _boxWidth = 550, _boxHeight = 270, _borderWidth = 12;
 		
 		_sprMainBox = new FlxSprite((_stageWidth - _boxWidth - _borderWidth) / 2, 50);
@@ -90,6 +94,17 @@ class UI extends FlxTypedGroup<FlxSprite>
 		_btnToggleModal.kill();
 		_btnToggleModal.onUp.callback = Reg.ps.toggleModal;
 		add(_btnToggleModal);
+		
+		_countdownOverlay = new FlxSprite(0, 0);
+		_countdownOverlay.makeGraphic(_stageWidth, _stageHeight, 0xdd000000);
+		add(_countdownOverlay);
+		
+		_countdownText = new FlxText(0, _stageHeight / 2 - 100, _stageWidth);
+		_countdownText.setFormat(200);
+		_countdownText.alignment = "center";
+		_countdownText.text = "3";
+		_countdownText.color = 0xffffffff;
+		add(_countdownText);
 	}
 	
 	override public function destroy()
