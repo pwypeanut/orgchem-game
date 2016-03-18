@@ -32,6 +32,11 @@ class SandboxUI extends FlxTypedGroup<FlxSprite>
 	
 	public var _countdownOverlay:FlxSprite;
 	public var _countdownText:FlxText;
+	
+	public var _btnMainMenu:FlxButton;
+	public var _gameOverOverlay:FlxSprite;
+	public var _gameOverText:FlxText;
+	public var _gameOverHeader:FlxText;
 
 	public function new(MaxSize:Int=0) 
 	{
@@ -64,6 +69,13 @@ class SandboxUI extends FlxTypedGroup<FlxSprite>
 		_txtName.setFormat(null, 20, 0);
 		_txtName.alignment = "center";
 		add(_txtName);
+		
+		_btnMainMenu = new FlxButton((_stageWidth / 2), 30);
+		_btnMainMenu.loadGraphic("assets/images/oc_Main Menu Button.png");
+		_btnMainMenu.scale.set(0.5, 0.5);
+		_btnMainMenu.updateHitbox();
+		_btnMainMenu.onUp.callback = Reg.ps.backToMainMenu;
+		add(_btnMainMenu);
 	}
 	
 	override public function destroy()

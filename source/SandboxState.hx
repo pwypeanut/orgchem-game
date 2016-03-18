@@ -354,4 +354,8 @@ class SandboxState extends FlxState
 		var sum = p1.addPoint(p2);
 		return FlxPoint.get(sum.x / 2, sum.y / 2);
 	}
+	
+	public function backToMainMenu() {
+		FlxG.switchState(new MenuState());
+	}
 }

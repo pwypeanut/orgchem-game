@@ -57,6 +57,7 @@ class PlayState extends SandboxState
 		
 		optionsSelected = [for (i in 0...4) false];
 		
+		remove(_ui);
 		_ui = new UI();
 		add(_ui);
 		
@@ -90,6 +91,12 @@ class PlayState extends SandboxState
 		_ui._timeLeftBar.currentValue = (timeLeft / timeLength) * 100;
 		if (timePassing) {
 			timeLeft -= FlxG.elapsed;
+		}
+		
+		if (timeLeft < 0) {
+			timePassing = false;
+			countdownState = 3;
+			gameOver();
 		}
 
 		if (FlxG.keys.justPressed.D) {
@@ -348,6 +355,14 @@ class PlayState extends SandboxState
 		_ui._countdownOverlay.kill();
 		_ui._countdownText.kill();
 		timePassing = true;
+	}
+	
+	private function gameOver() {
+		_ui._gameOverHeader.revive();
+		_ui._gameOverOverlay.revive();
+		_ui._gameOverText.text = Std.string(score);
+		_ui._gameOverText.revive();
+		_ui._btnMainMenu.revive();
 	}
 
 }

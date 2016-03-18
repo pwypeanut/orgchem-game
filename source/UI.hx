@@ -57,6 +57,7 @@ class UI extends SandboxUI
 		add(_btnConfirm);
 		
 		_txtName.kill();
+		remove(_btnMainMenu);
 		
 		_timeLeftBar = new FlxBar(0, 0, FlxBar.FILL_TOP_TO_BOTTOM, 15, _stageHeight);
 		_timeLeftBar.createFilledBar(0, 0xaa0071BC);
@@ -77,12 +78,40 @@ class UI extends SandboxUI
 		_countdownOverlay.makeGraphic(_stageWidth, _stageHeight, 0xdd000000);
 		add(_countdownOverlay);
 		
+		_gameOverOverlay = new FlxSprite(0, 0);
+		_gameOverOverlay.makeGraphic(_stageWidth, _stageHeight, 0xdd000000);
+		_gameOverOverlay.kill();
+		add(_gameOverOverlay);
+		
+		_gameOverText = new FlxText(0, _stageHeight / 2 - 100, _stageWidth);
+		_gameOverText.setFormat(200);
+		_gameOverText.alignment = "center";
+		_gameOverText.text = "0";
+		_gameOverText.color = 0xffffffff;
+		_gameOverText.kill();
+		add(_gameOverText);
+		
+		_gameOverHeader = new FlxText(0, _stageHeight / 2 - 200, _stageWidth);
+		_gameOverHeader.setFormat(50);
+		_gameOverHeader.alignment = "center";
+		_gameOverHeader.text = "FINAL SCORE";
+		_gameOverHeader.color = 0xffffffff;
+		_gameOverHeader.kill();
+		add(_gameOverHeader);
+		
 		_countdownText = new FlxText(0, _stageHeight / 2 - 100, _stageWidth);
 		_countdownText.setFormat(200);
 		_countdownText.alignment = "center";
 		_countdownText.text = "3";
 		_countdownText.color = 0xffffffff;
 		add(_countdownText);
+		
+		//_btnMainMenu.kill();
+		_btnMainMenu.x = (_stageWidth - _btnMainMenu.width) / 2;
+		_btnMainMenu.y = (_stageHeight - 200);
+		
+		add(_btnMainMenu);
+		_btnMainMenu.kill();
 	}
 	
 	override public function destroy()
