@@ -11,8 +11,11 @@ import flixel.util.FlxPoint;
 import flixel.util.FlxRandom;
 import flixel.util.FlxDestroyUtil;
 import haxe.ds.GenericStack;
+import haxe.ds.StringMap;
 import Std.int;
 import Math.random;
+
+typedef OptionClass = {option: String, error: String};
 
 /**
  * A FlxState which can be used for the actual gameplay.
@@ -41,7 +44,10 @@ class PlayState extends FlxState
 	
 	var modalShown:Bool = false;
 	var name:String = "";
+	var errorMessage: Array<String>;
 	var optionsSelected:Array<Bool>;
+
+	var usedMolecules: Array<String> = new Array<String>();
 	
 	var score:Int = 0;
 	
@@ -350,13 +356,18 @@ class PlayState extends FlxState
 		if (modalShown) return;
 		
 		var highDegree: Int = 0;
+		var activeCarbons: Int = 0;
 		for (i in 0...gridHeight) {
 			for (j in 0...gridWidth) {
 				if (!currentMolecule.isActive(i, j)) continue;
-				if (currentMolecule.grid[i][j].type.symbol != "C") continue;
+				if (currentMolecule.grid[i][j].type.symbol != "C") {
+					continue;
+				}
+				activeCarbons++;
 				if (currentMolecule.countCarbon(new Point(i, j)) > 2) highDegree++;
 			}
 		}
+		if (activeCarbons < 2) return;
 
 		var res = currentMolecule.getMainChain();
 		var mainPath = currentMolecule.tracePath(res.source, res.end, res.source);
@@ -367,22 +378,27 @@ class PlayState extends FlxState
 
 		if (highDegree != 0) return;
 
+		
+		
+		var answers: Array<OptionClass> = new Array<OptionClass>();
+		name = currentMolecule.getName();
+
+		if (usedMolecules.indexOf(name) != -1) return;
+		else usedMolecules.push(name);
+
 		_ui._modal.setAll("visible", true);
 		_ui._btnToggleModal.revive();
 		_ui._toggleActive = false;
 		modalShown = true;
 		
-		var answers: Array<String> = new Array<String>();
-		name = currentMolecule.getName();
-		
-		answers.push(name);
+		answers.push({option: name, error: "OK!"});
 		if (random() < 0.4) {
 			var wrongName: String = currentMolecule.getFlippedName();
-			if (wrongName != name) answers.push(wrongName);
+			if (wrongName != name) answers.push({option: wrongName, error: "Incorrect direction of main chain!"});
 		}
 		if (random() < 0.7) {
 			var wrongName: String = currentMolecule.getWrongMainChainName();
-			if (wrongName != name) answers.push(wrongName);
+			if (wrongName != name) answers.push({option: wrongName, error: "Wrong main chain chosen!"});
 		}
 
 		var rem: Int = 4 - answers.length;
@@ -391,33 +407,33 @@ class PlayState extends FlxState
 			var pos: Int = Std.int(random() * 3);
 			if (pos == 0) {
 				var wrongName: String = currentMolecule.getMutatedComponentName();
-				if (wrongName != name) answers.push(wrongName);
+				if (wrongName != name) answers.push({option: wrongName, error: "Recheck the numbering of side chains!"});
 				else rem++;
 			} else if (pos == 1) {
 				var wrongName: String = currentMolecule.getMissingComponentName();
-				if (wrongName != name) answers.push(wrongName);
+				if (wrongName != name) answers.push({option: wrongName, error: "Side chains are missing!"});
 				else rem++;
 			}
 			else {
 			 	var wrongName: String = currentMolecule.getWrongPrefixName();
-			 	if (wrongName != name) answers.push(wrongName);
+			 	if (wrongName != name) answers.push({option: wrongName, error: "Wrong main chain length!"});
 				else rem++;
 			}
 		}
 
-		answers.sort(function(a: String, b:String) {
-			if (a < b) return -1;
-			else if (a == b) return 0;
+		answers.sort(function(a: OptionClass, b: OptionClass) {
+			if (a.option < b.option) return -1;
+			else if (a.option == b.option) return 0;
 			else return 1;
 		});
 		var disabled: Array<Int> = new Array<Int>();
 		for (i in 1...4) {
-			if (answers[i] == answers[i - 1]) {
+			if (answers[i].option == answers[i - 1].option) {
 				disabled.push(i);
 			}
 		}
 
-		for (i in 0...disabled.length) answers[disabled[i]] = "-";
+		for (i in 0...disabled.length) answers[disabled[i]].option = answers[disabled[i]].error = "-";
 
 		for (i in 0...30) {
 			var x : Int = Std.int(random() * 4);
@@ -427,10 +443,12 @@ class PlayState extends FlxState
 			answers[y] = tmp;
 		}
 		for (i in 0...4) {
-			if (answers[i] == "-") _ui._modal._options.members[i].setAll("visible", false);
+			if (answers[i].option == "-") _ui._modal._options.members[i].setAll("visible", false);
 		}
+		errorMessage = new Array<String>();
 		for (i in (0...4)) {
-			_ui._modal._options.members[i]._txtText.text = answers[i];
+			_ui._modal._options.members[i]._txtText.text = answers[i].option;
+			errorMessage.push(answers[i].error);
 		}
 		
 	}
@@ -441,6 +459,7 @@ class PlayState extends FlxState
 		
 		if (answer != name) {
 			_ui._modal._options.members[optionNumber]._txtText.alpha = 0.2;
+			_ui._modal._options.members[optionNumber]._txtText.text = errorMessage[optionNumber];
 		} else {
 			modalShown = false;
 			var attempts = 0;

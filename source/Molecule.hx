@@ -549,6 +549,7 @@ class Molecule {
 			for (j in 0...width) {
 				if (!isActive(i, j)) continue;
 				if (grid[i][j].type.symbol != "C") score += 2;
+				else score++;
 			}
 		}
 		for (i in 0...height) {
@@ -557,7 +558,7 @@ class Molecule {
 			}
 		}
 		for (point in path) score -= numberBonds(point.x, point.y) - countCarbon(point);
-		for (point in path) score += countCarbon(point);
+		score -= path.length;
 		return score;
 	}
 
