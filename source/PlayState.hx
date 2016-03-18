@@ -150,6 +150,7 @@ class PlayState extends SandboxState
 					}
 				}
 			}
+
 			currentMouseSource = new Point(-1, -1); // cancel all previous operations
 			clickMouseSource = new Point( -1, -1);
 			updateMolecule();
@@ -179,6 +180,8 @@ class PlayState extends SandboxState
 								currentMolecule.adjacency[gridCoords.x][gridCoords.y][(d + 4) % 8] = 1;
 								if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") currentMouseSource = gridCoords;
 								else currentMouseSource = new Point(-1, -1);
+								trace("splau");
+								FlxG.sound.play("assets/sounds/pop.wav");
 							}
 						}
 					}

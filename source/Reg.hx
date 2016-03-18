@@ -39,4 +39,5 @@ class Reg
 	
 	public static var gameWidth = 768;
 	public static var gameHeight = 1024;
+
 }
