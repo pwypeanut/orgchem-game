@@ -39,11 +39,13 @@ class MenuState extends FlxState
 		
 		_btnNomenclature.onDown.callback = function () {
 			Reg.ps = new PlayState();
+			FlxG.sound.play("assets/sounds/button.wav");
 			FlxG.switchState(Reg.ps);
 		}
 		
 		_btnSandbox.onDown.callback = function () {
 			Reg.ps = new SandboxState();
+			FlxG.sound.play("assets/sounds/button.wav");
 			FlxG.switchState(Reg.ps);
 		}
 	}

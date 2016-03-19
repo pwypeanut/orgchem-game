@@ -63,7 +63,7 @@ class PlayState extends SandboxState
 		
 		_ui._modal.setAll("visible", false);
 		timePassing = false;
-		
+		FlxG.sound.play("assets/sounds/racebleeps.wav");
 		FlxTween.tween(_ui._countdownText, { alpha: 0 }, 1, { type: FlxTween.ONESHOT, complete: changeCountdown } );
 		//_ui._modal.revive();
 	}
@@ -157,6 +157,7 @@ class PlayState extends SandboxState
 					}
 				}
 			}
+
 			currentMouseSource = new Point(-1, -1); // cancel all previous operations
 			clickMouseSource = new Point( -1, -1);
 			updateMolecule();
@@ -186,6 +187,7 @@ class PlayState extends SandboxState
 								currentMolecule.adjacency[gridCoords.x][gridCoords.y][(d + 4) % 8] = 1;
 								if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") currentMouseSource = gridCoords;
 								else currentMouseSource = new Point(-1, -1);
+								
 							}
 						}
 					}
@@ -265,6 +267,8 @@ class PlayState extends SandboxState
 			}
 		}
 
+		FlxG.sound.play("assets/sounds/fuzzybeep.wav");
+
 		answers.sort(function(a: OptionClass, b: OptionClass) {
 			if (a.option < b.option) return -1;
 			else if (a.option == b.option) return 0;
@@ -304,6 +308,7 @@ class PlayState extends SandboxState
 		if (answer != name) {
 			_ui._modal._options.members[optionNumber]._txtText.alpha = 0.2;
 			_ui._modal._options.members[optionNumber]._txtText.text = errorMessage[optionNumber];
+			FlxG.sound.play("assets/sounds/alert.wav");
 		} else {
 			modalShown = false;
 			var attempts = 0;
@@ -318,6 +323,7 @@ class PlayState extends SandboxState
 			_ui._toggleActive = false;
 			_ui._btnToggleModal.kill();
 			clearGrid();
+			FlxG.sound.play("assets/sounds/ding.wav");
 		}
 	}
 	

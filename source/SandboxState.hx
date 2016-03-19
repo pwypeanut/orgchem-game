@@ -123,12 +123,14 @@ class SandboxState extends FlxState
 	}
 
 	public function clearGrid() {
+		FlxG.sound.play("assets/sounds/button.wav");
 		currentMolecule = new Molecule(gridHeight, gridWidth);
 		updateMolecule();
 		updateName();
 	}
 
 	public function undoMove() {
+		FlxG.sound.play("assets/sounds/button.wav");
 		if (undoStack.isEmpty()) return;
 		var latest = undoStack.first().clone();
 		undoStack.pop();
@@ -148,17 +150,6 @@ class SandboxState extends FlxState
 	override public function update():Void
 	{
 		super.update();
-
-		if (FlxG.keys.justPressed.D) {
-			// clear all
-			clearGrid();
-		}
-
-		if (FlxG.keys.justPressed.U) {
-			// undo last move
-			undoMove();
-		}
-
 
 		if (FlxG.mouse.justPressed) {
 			var gridCoords = new Point(getTile(FlxG.mouse.x, FlxG.mouse.y).x, getTile(FlxG.mouse.x, FlxG.mouse.y).y);
@@ -234,6 +225,7 @@ class SandboxState extends FlxState
 								currentMolecule.adjacency[gridCoords.x][gridCoords.y][(d + 4) % 8] = 1;
 								if (currentMolecule.grid[gridCoords.x][gridCoords.y].type.name == "Carbon") currentMouseSource = gridCoords;
 								else currentMouseSource = new Point(-1, -1);
+								FlxG.sound.play("assets/sounds/pop.wav");
 							}
 						}
 					}
@@ -356,6 +348,7 @@ class SandboxState extends FlxState
 	}
 	
 	public function backToMainMenu() {
+		FlxG.sound.play("assets/sounds/button.wav");
 		FlxG.switchState(new MenuState());
 	}
 }
