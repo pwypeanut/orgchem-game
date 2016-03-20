@@ -19,6 +19,7 @@ class MenuState extends FlxState
 	public var _stageHeight:Int = 1024;
 	var _btnNomenclature:FlxButton; 
 	var _btnSandbox:FlxButton;
+	var _sprLogo:FlxSprite;
 	
 	override public function create():Void
 	{
@@ -26,16 +27,22 @@ class MenuState extends FlxState
 		
 		this.bgColor = 0xffffffff;
 		
+		FlxG.camera.antialiasing = true;
+		
 		var _btnWidth = 600;
 		var _btnHeight = 150;
 		
-		_btnNomenclature = new FlxButton(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 + _btnHeight / 2);
+		_btnNomenclature = new FlxButton(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 + _btnHeight / 2 + 50);
 		_btnNomenclature.loadGraphic("assets/images/oc_Challenge Button.png");
 		add(_btnNomenclature);
 		
-		_btnSandbox = new FlxButton(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 + 3 * _btnHeight / 2 + 20);
+		_btnSandbox = new FlxButton(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 + 3 * _btnHeight / 2 + 70);
 		_btnSandbox.loadGraphic("assets/images/oc_Sandbox Button.png");
 		add(_btnSandbox);
+		
+		_sprLogo = new FlxSprite(_stageWidth / 2 - _btnWidth / 2, _stageHeight / 2 - _btnWidth + 120);
+		_sprLogo.loadGraphic("assets/images/oc_Logo.png");
+		add(_sprLogo);
 		
 		_btnNomenclature.onDown.callback = function () {
 			Reg.ps = new PlayState();
