@@ -27,13 +27,14 @@ class Tile extends FlxSprite {
 			setType(type);
 		}
 		
-		var diagonalLength:Float = 60 / Math.sqrt(2);
+		var diagonalLength:Float = 30;
+		var dLength2:Float = 60 * Math.sqrt(3) / 2;
 		var midpoint = this.getMidpoint();
 		
-		hydrogens.add(new HydrogenAtom(midpoint.x - diagonalLength, midpoint.y - diagonalLength));
-		hydrogens.add(new HydrogenAtom(midpoint.x - diagonalLength, midpoint.y + diagonalLength));
-		hydrogens.add(new HydrogenAtom(midpoint.x + diagonalLength, midpoint.y + diagonalLength));
-		hydrogens.add(new HydrogenAtom(midpoint.x + diagonalLength, midpoint.y - diagonalLength));
+		hydrogens.add(new HydrogenAtom(midpoint.x - diagonalLength, midpoint.y - dLength2));
+		hydrogens.add(new HydrogenAtom(midpoint.x - dLength2, midpoint.y + diagonalLength));
+		hydrogens.add(new HydrogenAtom(midpoint.x + diagonalLength, midpoint.y + dLength2));
+		hydrogens.add(new HydrogenAtom(midpoint.x + dLength2, midpoint.y - diagonalLength));
 		
 		hydrogens.forEach(function(hydrogen) {
 			hydrogen.hide();
